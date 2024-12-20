@@ -59,15 +59,12 @@
       "version": ""
     },
     {
-      "log_codes": [
-        "InvalidFileLink"
-      ],
       "type": "Conceptual",
       "source_relative_path": "index.md",
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "D8J0wbEaNmDW+mbN5eVP7HpR+Uije/n5Uu+VNo6Hyb4="
+          "hash": "zcon945hQGoHhOttQYUaRIHzP/KK47Z/q3SuNBiihBQ="
         }
       },
       "is_incremental": false,
