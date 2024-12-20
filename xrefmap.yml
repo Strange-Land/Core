@@ -1,0 +1,41 @@
+### YamlMime:XRefMap
+sorted: true
+references:
+- uid: StrangeLand
+  name: StrangeLand
+  href: api/StrangeLand.html
+  commentId: N:StrangeLand
+  fullName: StrangeLand
+  nameWithType: StrangeLand
+- uid: StrangeLand.SC_SetRandomClientColor
+  name: SC_SetRandomClientColor
+  href: api/StrangeLand.SC_SetRandomClientColor.html
+  commentId: T:StrangeLand.SC_SetRandomClientColor
+  fullName: StrangeLand.SC_SetRandomClientColor
+  nameWithType: SC_SetRandomClientColor
+- uid: StrangeLand.SC_SetRandomClientColor.OnNetworkSpawn
+  name: OnNetworkSpawn()
+  href: api/StrangeLand.SC_SetRandomClientColor.html#StrangeLand_SC_SetRandomClientColor_OnNetworkSpawn
+  commentId: M:StrangeLand.SC_SetRandomClientColor.OnNetworkSpawn
+  fullName: StrangeLand.SC_SetRandomClientColor.OnNetworkSpawn()
+  nameWithType: SC_SetRandomClientColor.OnNetworkSpawn()
+- uid: StrangeLand.SC_SetRandomClientColor.OnNetworkSpawn*
+  name: OnNetworkSpawn
+  href: api/StrangeLand.SC_SetRandomClientColor.html#StrangeLand_SC_SetRandomClientColor_OnNetworkSpawn_
+  commentId: Overload:StrangeLand.SC_SetRandomClientColor.OnNetworkSpawn
+  isSpec: "True"
+  fullName: StrangeLand.SC_SetRandomClientColor.OnNetworkSpawn
+  nameWithType: SC_SetRandomClientColor.OnNetworkSpawn
+- uid: StrangeLand.SC_SetRandomClientColor.OnOwnershipChanged(System.UInt64,System.UInt64)
+  name: OnOwnershipChanged(UInt64, UInt64)
+  href: api/StrangeLand.SC_SetRandomClientColor.html#StrangeLand_SC_SetRandomClientColor_OnOwnershipChanged_System_UInt64_System_UInt64_
+  commentId: M:StrangeLand.SC_SetRandomClientColor.OnOwnershipChanged(System.UInt64,System.UInt64)
+  fullName: StrangeLand.SC_SetRandomClientColor.OnOwnershipChanged(System.UInt64, System.UInt64)
+  nameWithType: SC_SetRandomClientColor.OnOwnershipChanged(UInt64, UInt64)
+- uid: StrangeLand.SC_SetRandomClientColor.OnOwnershipChanged*
+  name: OnOwnershipChanged
+  href: api/StrangeLand.SC_SetRandomClientColor.html#StrangeLand_SC_SetRandomClientColor_OnOwnershipChanged_
+  commentId: Overload:StrangeLand.SC_SetRandomClientColor.OnOwnershipChanged
+  isSpec: "True"
+  fullName: StrangeLand.SC_SetRandomClientColor.OnOwnershipChanged
+  nameWithType: SC_SetRandomClientColor.OnOwnershipChanged
