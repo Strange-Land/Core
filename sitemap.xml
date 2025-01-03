@@ -1,32 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://strange-land.github.io/docs/api/StrangeLand.SC_SetRandomClientColor.html</loc>
-    <lastmod>2024-12-20T04:16:14+00:00</lastmod>
+    <loc>https://strange-land.github.io/docs/api/StrangeLand.SetRandomClientColor.html</loc>
+    <lastmod>2025-01-03T03:39:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://strange-land.github.io/docs/api/StrangeLand.html</loc>
-    <lastmod>2024-12-20T04:16:14+00:00</lastmod>
+    <lastmod>2025-01-03T03:39:58+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://strange-land.github.io/docs/index.html</loc>
-    <lastmod>2024-12-20T04:16:14+00:00</lastmod>
+    <lastmod>2025-01-03T03:39:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://strange-land.github.io/docs/manual/GettingStarted.html</loc>
-    <lastmod>2024-12-20T04:16:14+00:00</lastmod>
+    <lastmod>2025-01-03T03:39:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://strange-land.github.io/docs/manual/Introduction.html</loc>
-    <lastmod>2024-12-20T04:16:14+00:00</lastmod>
+    <lastmod>2025-01-03T03:39:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

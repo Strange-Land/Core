@@ -2,12 +2,12 @@
   "api/StrangeLand.html": {
     "href": "api/StrangeLand.html",
     "title": "Namespace StrangeLand | StrangeLand - Core",
-    "keywords": "Namespace StrangeLand Classes SC_SetRandomClientColor This class sets a randcom Client Color on startup and spawing to distinquish clinets. Its mostly used for debugging network issues."
+    "keywords": "Namespace StrangeLand Classes SetRandomClientColor This class sets a randcom Client Color on startup and spawing to distinquish clinets. Its mostly used for debugging network issues."
   },
-  "api/StrangeLand.SC_SetRandomClientColor.html": {
-    "href": "api/StrangeLand.SC_SetRandomClientColor.html",
-    "title": "Class SC_SetRandomClientColor | StrangeLand - Core",
-    "keywords": "Class SC_SetRandomClientColor This class sets a randcom Client Color on startup and spawing to distinquish clinets. Its mostly used for debugging network issues. Inheritance System.Object SC_SetRandomClientColor Namespace : StrangeLand Assembly : cs.temp.dll.dll Syntax public class SC_SetRandomClientColor : NetworkBehaviour Methods OnNetworkSpawn() Declaration public override void OnNetworkSpawn() OnOwnershipChanged(UInt64, UInt64) Declaration protected override void OnOwnershipChanged(ulong previous, ulong current) Parameters Type Name Description System.UInt64 previous System.UInt64 current"
+  "api/StrangeLand.SetRandomClientColor.html": {
+    "href": "api/StrangeLand.SetRandomClientColor.html",
+    "title": "Class SetRandomClientColor | StrangeLand - Core",
+    "keywords": "Class SetRandomClientColor This class sets a randcom Client Color on startup and spawing to distinquish clinets. Its mostly used for debugging network issues. Inheritance System.Object SetRandomClientColor Namespace : StrangeLand Assembly : cs.temp.dll.dll Syntax public class SetRandomClientColor : NetworkBehaviour Methods OnNetworkSpawn() Declaration public override void OnNetworkSpawn() OnOwnershipChanged(UInt64, UInt64) Declaration protected override void OnOwnershipChanged(ulong previous, ulong current) Parameters Type Name Description System.UInt64 previous System.UInt64 current"
   },
   "index.html": {
     "href": "index.html",

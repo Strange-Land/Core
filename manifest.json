@@ -24,11 +24,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/StrangeLand.SC_SetRandomClientColor.yml",
+      "source_relative_path": "api/StrangeLand.SetRandomClientColor.yml",
       "output": {
         ".html": {
-          "relative_path": "api/StrangeLand.SC_SetRandomClientColor.html",
-          "hash": "eN3H2ins/0uJvpLM5ALeB7mKjerbRl0JNcTzDwlO6ak="
+          "relative_path": "api/StrangeLand.SetRandomClientColor.html",
+          "hash": "g8oWsPha4X26LfNEsD2R1vnkYxAOd/9VhouLapvnAoE="
         }
       },
       "is_incremental": false,
@@ -40,7 +40,7 @@
       "output": {
         ".html": {
           "relative_path": "api/StrangeLand.html",
-          "hash": "MSY2tOmYS70gM93dp8ghWcWHe+OwD3tXF9+77FsHYFk="
+          "hash": "aeSrfaOzPgppPb/nxqX43v2tUMLrKTufdXSV/dQ9cQA="
         }
       },
       "is_incremental": false,
@@ -52,7 +52,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "sDN6KYJtjoFuNTanRKe+6pMRK+LW8CyPyqQjwcTWBfs="
+          "hash": "mi1l2sD1mIK33jy48z8fxD6w46elBSO6VKpKiKZfy/k="
         }
       },
       "is_incremental": false,
