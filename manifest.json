@@ -2,7 +2,6 @@
   "sitemap": {
     "fileOptions": {
       "api/*": {
-        "baseUrl": "https://strange-land.github.io/docs/",
         "changefreq": "daily"
       }
     },
@@ -21,42 +20,6 @@
         }
       },
       "is_incremental": false
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/StrangeLand.SetRandomClientColor.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/StrangeLand.SetRandomClientColor.html",
-          "hash": "g8oWsPha4X26LfNEsD2R1vnkYxAOd/9VhouLapvnAoE="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/StrangeLand.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/StrangeLand.html",
-          "hash": "aeSrfaOzPgppPb/nxqX43v2tUMLrKTufdXSV/dQ9cQA="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
-    },
-    {
-      "type": "Toc",
-      "source_relative_path": "api/toc.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/toc.html",
-          "hash": "mi1l2sD1mIK33jy48z8fxD6w46elBSO6VKpKiKZfy/k="
-        }
-      },
-      "is_incremental": false,
-      "version": ""
     },
     {
       "type": "Conceptual",
@@ -134,7 +97,7 @@
       "output": {
         ".html": {
           "relative_path": "toc.html",
-          "hash": "3pG6nlqcBc0igjws4esRjwzgbO4UGmT75cToo6aNPxg="
+          "hash": "7W7jcV7ELBs6ILUiwetv0WBBghoHkqp4yiC+h56wgGY="
         }
       },
       "is_incremental": false,
@@ -156,12 +119,6 @@
           "can_incremental": false,
           "incrementalPhase": "build",
           "total_file_count": 3,
-          "skipped_file_count": 0
-        },
-        "ManagedReferenceDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 2,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
