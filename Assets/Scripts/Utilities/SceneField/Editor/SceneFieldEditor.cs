@@ -18,10 +18,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-
+namespace Utilities.SceneField.Editor
+{
     [CustomPropertyDrawer(typeof(SceneField))]
     public class SceneFieldEditor : PropertyDrawer
     {
@@ -153,3 +154,4 @@ using UnityEditor;
             }
         }
     }
+}

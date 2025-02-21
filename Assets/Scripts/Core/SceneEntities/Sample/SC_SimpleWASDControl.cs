@@ -1,34 +1,35 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
-public class SC_SimpleWASDControl : NetworkBehaviour
+namespace Core.SceneEntities.Sample
 {
-    public float Speed = 5;
-    
-    private void Update()
+    public class SC_SimpleWASDControl : NetworkBehaviour
     {
-        if (!IsOwner || !IsSpawned) return;
+        public float Speed = 5;
+    
+        private void Update()
+        {
+            if (!IsOwner || !IsSpawned) return;
 
-        var multiplier = Speed * Time.deltaTime;
+            var multiplier = Speed * Time.deltaTime;
 
-        if (Keyboard.current.aKey.isPressed)
-        {
-            transform.position += new Vector3(-multiplier, 0, 0);
-        }
-        else if (Keyboard.current.dKey.isPressed)
-        {
-            transform.position += new Vector3(multiplier, 0, 0);
-        }
-        else if (Keyboard.current.wKey.isPressed)
-        {
-            transform.position += new Vector3(0, 0, multiplier);
-        }
-        else if (Keyboard.current.sKey.isPressed)
-        {
-            transform.position += new Vector3(0, 0, -multiplier);
+            if (Keyboard.current.aKey.isPressed)
+            {
+                transform.position += new Vector3(-multiplier, 0, 0);
+            }
+            else if (Keyboard.current.dKey.isPressed)
+            {
+                transform.position += new Vector3(multiplier, 0, 0);
+            }
+            else if (Keyboard.current.wKey.isPressed)
+            {
+                transform.position += new Vector3(0, 0, multiplier);
+            }
+            else if (Keyboard.current.sKey.isPressed)
+            {
+                transform.position += new Vector3(0, 0, -multiplier);
+            }
         }
     }
 }

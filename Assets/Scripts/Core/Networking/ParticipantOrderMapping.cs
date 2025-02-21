@@ -2,56 +2,59 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[System.Serializable]
-public class ParticipantOrderMapping
+namespace Core.Networking
 {
-    public Dictionary<ulong, ParticipantOrder> _clientToOrder = new Dictionary<ulong, ParticipantOrder>();
-    public Dictionary<ParticipantOrder, ulong> _orderToClient = new Dictionary<ParticipantOrder, ulong>();
-    
-    public ParticipantOrder GetPO(ulong id)
+    [System.Serializable]
+    public class ParticipantOrderMapping
     {
-        if (_clientToOrder.ContainsKey(id))
+        public Dictionary<ulong, ParticipantOrder> _clientToOrder = new Dictionary<ulong, ParticipantOrder>();
+        public Dictionary<ParticipantOrder, ulong> _orderToClient = new Dictionary<ParticipantOrder, ulong>();
+    
+        public ParticipantOrder GetPO(ulong id)
         {
-            return _clientToOrder[id];
+            if (_clientToOrder.ContainsKey(id))
+            {
+                return _clientToOrder[id];
+            }
+            Debug.LogError($"No ParticipantOrder found for id {id}");
+            return ParticipantOrder.None;
         }
-        Debug.LogError($"No ParticipantOrder found for id {id}");
-        return ParticipantOrder.None;
-    }
     
-    public ulong GetClientID(ParticipantOrder po)
-    {
-        if (_orderToClient.ContainsKey(po))
+        public ulong GetClientID(ParticipantOrder po)
         {
-            return _orderToClient[po];
+            if (_orderToClient.ContainsKey(po))
+            {
+                return _orderToClient[po];
+            }
+            return 0;
         }
-        return 0;
-    }
     
-    public bool AddParticipant(ParticipantOrder po, ulong id)
-    {
-        if (!_orderToClient.ContainsKey(po))
+        public bool AddParticipant(ParticipantOrder po, ulong id)
         {
-            _orderToClient.Add(po, id);
-            _clientToOrder.Add(id, po);
-            return true;
+            if (!_orderToClient.ContainsKey(po))
+            {
+                _orderToClient.Add(po, id);
+                _clientToOrder.Add(id, po);
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
     
-    public bool RemoveParticipant(ParticipantOrder po)
-    {
-        if (_orderToClient.ContainsKey(po))
+        public bool RemoveParticipant(ParticipantOrder po)
         {
-            var id = _orderToClient[po];
-            _orderToClient.Remove(po);
-            _clientToOrder.Remove(id);
-            return true;
+            if (_orderToClient.ContainsKey(po))
+            {
+                var id = _orderToClient[po];
+                _orderToClient.Remove(po);
+                _clientToOrder.Remove(id);
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
     
-    public ParticipantOrder[] GetAllConnectedPOs()
-    {
-        return _orderToClient.Keys.ToArray();
+        public ParticipantOrder[] GetAllConnectedPOs()
+        {
+            return _orderToClient.Keys.ToArray();
+        }
     }
 }

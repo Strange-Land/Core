@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace StrangeLand
+namespace Core.SceneEntities.Sample
 {
 
 /// <summary>

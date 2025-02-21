@@ -1,12 +1,9 @@
-using System;
-using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Multiplayer.Playmode;
+using UnityEngine;
 
-namespace Core
+namespace Core.Networking
 {
     public class StartupManager : MonoBehaviour
     {

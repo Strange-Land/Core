@@ -1,91 +1,93 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Core.Networking;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public abstract class ClientDisplay : NetworkBehaviour {
+namespace Core.SceneEntities.NetworkedComponents.ClientInterface
+{
+    public abstract class ClientDisplay : NetworkBehaviour {
     
-    private NetworkVariable<ParticipantOrder> _participantOrder = new NetworkVariable<ParticipantOrder>();
+        private NetworkVariable<ParticipantOrder> _participantOrder = new NetworkVariable<ParticipantOrder>();
 
-    public InteractableObject MyInteractableObject;
+        public InteractableObject.InteractableObject MyInteractableObject;
     
-    private static List<ClientDisplay> instances = new List<ClientDisplay>(); // Can cause memory leakage if not kept clean...!!! 
-    public static IReadOnlyList<ClientDisplay> Instances => instances.AsReadOnly();
+        private static List<ClientDisplay> instances = new List<ClientDisplay>(); // Can cause memory leakage if not kept clean...!!! 
+        public static IReadOnlyList<ClientDisplay> Instances => instances.AsReadOnly();
 
-    private void Awake()
-    {
-        instances.Add(this);
-    }
+        private void Awake()
+        {
+            instances.Add(this);
+        }
 
-    public override void OnDestroy() {
-        instances.Remove(this);
-    }
+        public override void OnDestroy() {
+            instances.Remove(this);
+        }
 
-    public override void OnNetworkSpawn() {
-        /* I know we originally do it in inherited classes
+        public override void OnNetworkSpawn() {
+            /* I know we originally do it in inherited classes
         but at least for camera and audio listener they should be generic 
         the inherited classes just need to remember do base.OnNetworkSpawn()
         */
-        if (!IsLocalPlayer)
-        {
-            foreach (var c in GetComponentsInChildren<Camera>())
+            if (!IsLocalPlayer)
             {
-                c.enabled = false;
-            }
+                foreach (var c in GetComponentsInChildren<Camera>())
+                {
+                    c.enabled = false;
+                }
             
-            foreach (var a in GetComponentsInChildren<AudioListener>())
+                foreach (var a in GetComponentsInChildren<AudioListener>())
+                {
+                    a.enabled = false;
+                }
+            
+                foreach (var e in GetComponentsInChildren<EventSystem>())
+                {
+                    e.enabled = false;
+                }
+            
+            }
+            else
             {
-                a.enabled = false;
+                Debug.Log("ClientInterface OnNetworkSpawn");
             }
-            
-            foreach (var e in GetComponentsInChildren<EventSystem>())
-            {
-                e.enabled = false;
-            }
-            
         }
-        else
-        {
-            Debug.Log("ClientInterface OnNetworkSpawn");
-        }
-    }
     
-    public void SetParticipantOrder(ParticipantOrder _ParticipantOrder)
-    {
-        _participantOrder.Value = _ParticipantOrder;
-    }
-    public ParticipantOrder GetParticipantOrder()
-    {
-        return _participantOrder.Value;
-    }
-
-    public abstract void AssignFollowTransform(InteractableObject MyInteractableObject, ulong targetClient);
-    public abstract InteractableObject GetFollowTransform();
-
-    public virtual void De_AssignFollowTransform(NetworkObject netobj)
-    {
-        if (IsServer)
+        public void SetParticipantOrder(ParticipantOrder _ParticipantOrder)
         {
-            NetworkObject.TryRemoveParent(false);
+            _participantOrder.Value = _ParticipantOrder;
+        }
+        public ParticipantOrder GetParticipantOrder()
+        {
+            return _participantOrder.Value;
+        }
+
+        public abstract void AssignFollowTransform(InteractableObject.InteractableObject MyInteractableObject, ulong targetClient);
+        public abstract InteractableObject.InteractableObject GetFollowTransform();
+
+        public virtual void De_AssignFollowTransform(NetworkObject netobj)
+        {
+            if (IsServer)
+            {
+                NetworkObject.TryRemoveParent(false);
+                MyInteractableObject = null;
+                De_AssignFollowTransformClientRPC();
+            }
+        }
+    
+    
+        [ClientRpc]
+        public virtual void De_AssignFollowTransformClientRPC() {
             MyInteractableObject = null;
-            De_AssignFollowTransformClientRPC();
+            DontDestroyOnLoad(gameObject);
         }
+    
+        public abstract Transform GetMainCamera();
+    
+        //David: Once finished callibration return a True to the provided function. onm the server we then know callibration was succesfful. false for callibration failed.
+        public abstract void CalibrateClient(Action<bool> calibrationFinishedCallback);
+    
+        public abstract void  GoForPostQuestion(); 
     }
-    
-    
-    [ClientRpc]
-    public virtual void De_AssignFollowTransformClientRPC() {
-        MyInteractableObject = null;
-        DontDestroyOnLoad(gameObject);
-    }
-    
-    public abstract Transform GetMainCamera();
-    
-    //David: Once finished callibration return a True to the provided function. onm the server we then know callibration was succesfful. false for callibration failed.
-    public abstract void CalibrateClient(Action<bool> calibrationFinishedCallback);
-    
-    public abstract void  GoForPostQuestion(); 
 }

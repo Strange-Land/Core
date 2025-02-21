@@ -1,9 +1,10 @@
-using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
+using Utilities;
 
-
-public class ClientDisplaysSO : SingletonSO<ClientDisplaysSO>
+namespace Core.SceneEntities.NetworkedComponents.ClientInterface
 {
-    public List<ClientDisplaySO> ClientDisplays = new List<ClientDisplaySO>();
+    public class ClientDisplaysSO : SingletonSO<ClientDisplaysSO>
+    {
+        public List<ClientDisplaySO> ClientDisplays = new List<ClientDisplaySO>();
+    }
 }

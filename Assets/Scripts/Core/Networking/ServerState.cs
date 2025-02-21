@@ -1,8 +1,7 @@
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
 
-namespace Core
+namespace Core.Networking
 {
     /*
      Ahhhhhh so here is the thing. It makes a ton of sense to use Interface for the state machine

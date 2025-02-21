@@ -1,8 +1,11 @@
-using UnityEngine;
 using System.Collections.Generic;
+using Utilities;
 
-public class InteractableObjectsSO : SingletonSO<InteractableObjectsSO>
+namespace Core.SceneEntities.NetworkedComponents.InteractableObject
 {
-    public List<InteractableObjectSO> InteractableObjects = new List<InteractableObjectSO>();
+    public class InteractableObjectsSO : SingletonSO<InteractableObjectsSO>
+    {
+        public List<InteractableObjectSO> InteractableObjects = new List<InteractableObjectSO>();
+    }
 }
 

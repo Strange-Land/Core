@@ -1,16 +1,19 @@
-using System;
+using Core.Networking;
 using UnityEngine;
 
-public class SpawnPoint : MonoBehaviour
+namespace Core.Scenario
 {
-    public ParticipantOrder PO;
-
-    private void OnDrawGizmos()
+    public class SpawnPoint : MonoBehaviour
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(transform.position, .25f);
+        public ParticipantOrder PO;
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(transform.position, .25f);
         
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 2);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + transform.forward * 2);
+        }
     }
 }

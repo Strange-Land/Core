@@ -1,10 +1,11 @@
-using System;
 using System.Collections.Generic;
+using Core.Networking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utilities.SceneField;
 
-namespace Core
+namespace Core.UI
 {
     public class ResearcherUI : MonoBehaviour
     {

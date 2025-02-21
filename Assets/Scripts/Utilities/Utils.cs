@@ -1,15 +1,18 @@
 using UnityEngine;
 
-public static class Utils
+namespace Utilities
 {
-    public static void  DisableComponentsInChildren<T>(GameObject gameObject) where T : Component
+    public static class Utils
     {
-        T[] components = gameObject.GetComponentsInChildren<T>();
-        foreach (T component in components)
+        public static void  DisableComponentsInChildren<T>(GameObject gameObject) where T : Component
         {
-            // component.enabled = false;
-        }
+            T[] components = gameObject.GetComponentsInChildren<T>();
+            foreach (T component in components)
+            {
+                // component.enabled = false;
+            }
 
-    }
+        }
     
+    }
 }

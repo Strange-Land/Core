@@ -1,81 +1,82 @@
-using UnityEngine;
-
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
+using UnityEngine;
+using Utilities;
 
-public class InteractableObjectSO : ScriptableObject
+namespace Core.SceneEntities.NetworkedComponents.InteractableObject
 {
-    [Tooltip("Unique human readable name that will be displayed in the UI and stored in json")]
-    public string ID;
-    public EAuthoritativeMode AuthoritativeMode;
-    public GameObject Prefab;    
-}
-
-#if UNITY_EDITOR
-[CustomEditor(typeof(InteractableObjectSO))]
-public class Editor_InteractableObjectSO : Editor
-{
-    private SerializedProperty objectNameProp;
-    private SerializedProperty objectPrefabProp;
-    private SerializedProperty authoritativeModeProp;
-
-    private void OnEnable()
+    public class InteractableObjectSO : ScriptableObject
     {
-        objectNameProp = serializedObject.FindProperty("ID");
-        objectPrefabProp = serializedObject.FindProperty("Prefab");
-        authoritativeModeProp = serializedObject.FindProperty("AuthoritativeMode");
+        [Tooltip("Unique human readable name that will be displayed in the UI and stored in json")]
+        public string ID;
+        public EAuthoritativeMode AuthoritativeMode;
+        public GameObject Prefab;    
     }
 
-    public override void OnInspectorGUI()
+#if UNITY_EDITOR
+    [CustomEditor(typeof(InteractableObjectSO))]
+    public class Editor_InteractableObjectSO : Editor
     {
-        serializedObject.Update();
+        private SerializedProperty objectNameProp;
+        private SerializedProperty objectPrefabProp;
+        private SerializedProperty authoritativeModeProp;
 
-        EditorGUILayout.PropertyField(objectNameProp);
-        EditorGUILayout.PropertyField(authoritativeModeProp);
-        
-        EditorGUI.BeginChangeCheck();
-        var newPrefab = EditorGUILayout.ObjectField(
-            "Object Prefab",
-            objectPrefabProp.objectReferenceValue,
-            typeof(GameObject),
-            false
-        );
-
-        if (EditorGUI.EndChangeCheck())
+        private void OnEnable()
         {
-            // check class attached to the prefab
-            if (newPrefab != null)
+            objectNameProp = serializedObject.FindProperty("ID");
+            objectPrefabProp = serializedObject.FindProperty("Prefab");
+            authoritativeModeProp = serializedObject.FindProperty("AuthoritativeMode");
+        }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            EditorGUILayout.PropertyField(objectNameProp);
+            EditorGUILayout.PropertyField(authoritativeModeProp);
+        
+            EditorGUI.BeginChangeCheck();
+            var newPrefab = EditorGUILayout.ObjectField(
+                "Object Prefab",
+                objectPrefabProp.objectReferenceValue,
+                typeof(GameObject),
+                false
+            );
+
+            if (EditorGUI.EndChangeCheck())
             {
-                var go = newPrefab as GameObject;
-                if (!IsValidInteractableObject(go))
+                // check class attached to the prefab
+                if (newPrefab != null)
                 {
-                    Debug.LogWarning("The assigned GameObject does not have a component " +
-                                     "that inherits from 'InteractableObject'!");
-                    newPrefab = null;
+                    var go = newPrefab as GameObject;
+                    if (!IsValidInteractableObject(go))
+                    {
+                        Debug.LogWarning("The assigned GameObject does not have a component " +
+                                         "that inherits from 'InteractableObject'!");
+                        newPrefab = null;
+                    }
+                }
+
+                objectPrefabProp.objectReferenceValue = newPrefab;
+            }
+
+            serializedObject.ApplyModifiedProperties();
+        }
+    
+        private bool IsValidInteractableObject(GameObject go)
+        {
+            if (go == null) return false;
+
+            var components = go.GetComponents<MonoBehaviour>();
+            foreach (var component in components)
+            {
+                if (component != null && component is InteractableObject)
+                {
+                    return true;
                 }
             }
 
-            objectPrefabProp.objectReferenceValue = newPrefab;
+            return false;
         }
-
-        serializedObject.ApplyModifiedProperties();
     }
-    
-    private bool IsValidInteractableObject(GameObject go)
-    {
-        if (go == null) return false;
-
-        var components = go.GetComponents<MonoBehaviour>();
-        foreach (var component in components)
-        {
-            if (component != null && component is InteractableObject)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-}
 #endif
+}

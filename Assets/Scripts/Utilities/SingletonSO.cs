@@ -1,28 +1,31 @@
 using UnityEngine;
 
-public abstract class SingletonSO<T> : ScriptableObject where T : ScriptableObject
+namespace Utilities
 {
-    private static T instance;
-
-    public static T Instance
+    public abstract class SingletonSO<T> : ScriptableObject where T : ScriptableObject
     {
-        get
+        private static T instance;
+
+        public static T Instance
         {
-            if (instance == null)
+            get
             {
-                instance = Resources.Load<T>(typeof(T).Name);
-
-                if (instance ==null)
+                if (instance == null)
                 {
-                    Debug.LogError($"SingletonSO<{typeof(T).Name}> not found in Resources folder!!!");
+                    instance = Resources.Load<T>(typeof(T).Name);
+
+                    if (instance ==null)
+                    {
+                        Debug.LogError($"SingletonSO<{typeof(T).Name}> not found in Resources folder!!!");
+                    }
                 }
+                return instance;
             }
-            return instance;
         }
-    }
     
-    protected virtual void OnDisable()
-    {
-        instance = null;
+        protected virtual void OnDisable()
+        {
+            instance = null;
+        }
     }
 }

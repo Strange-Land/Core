@@ -1,9 +1,10 @@
+using System.Diagnostics;
 using System.IO;
+using Core.Networking;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Diagnostics;
 
-namespace Core
+namespace Core.UI
 {
     public class ResearcherStartupUI : MonoBehaviour
     {

@@ -1,11 +1,14 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Core.Scenario;
+using Core.SceneEntities.NetworkedComponents.ClientInterface;
+using Core.SceneEntities.NetworkedComponents.InteractableObject;
 using Newtonsoft.Json;
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utilities.SceneField;
 
 /* note, feel free to remove
 Default -> Waiting Room: ServerStarted
@@ -18,7 +21,7 @@ AnyState -> Waiting Room: trigger from UI
 
 */
 
-namespace Core
+namespace Core.Networking
 {
     public class ConnectionAndSpawning : NetworkBehaviour
     {    

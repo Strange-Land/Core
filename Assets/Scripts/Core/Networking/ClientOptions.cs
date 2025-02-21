@@ -1,38 +1,41 @@
 using System.Collections.Generic;
 
-public class ClientOptions
+namespace Core.Networking
 {
-    private static ClientOptions _instance;
-
-    public static ClientOptions Instance
+    public class ClientOptions
     {
-        get
+        private static ClientOptions _instance;
+
+        public static ClientOptions Instance
         {
-            if (_instance == null)
+            get
             {
-                _instance = new ClientOptions();
+                if (_instance == null)
+                {
+                    _instance = new ClientOptions();
+                }
+                return _instance;
             }
-            return _instance;
+            internal set => _instance = value;
         }
-        internal set => _instance = value;
-    }
 
-    public List<ClientOption> Options = new List<ClientOption>();
+        public List<ClientOption> Options = new List<ClientOption>();
 
-    public ClientOption GetOption(ParticipantOrder po)
-    {
-        return Options.Find(x => x.PO == po);
-    }
-    
-    private ClientOptions()
-    {
-        for (int i = 0; i < 6; i++)
+        public ClientOption GetOption(ParticipantOrder po)
         {
-            ClientOption co = new ClientOption();
-            co.PO = (ParticipantOrder)i; 
-            co.ClientDisplay = 0;
-            co.InteractableObject = 0;
-            Options.Add(co);
+            return Options.Find(x => x.PO == po);
+        }
+    
+        private ClientOptions()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                ClientOption co = new ClientOption();
+                co.PO = (ParticipantOrder)i; 
+                co.ClientDisplay = 0;
+                co.InteractableObject = 0;
+                Options.Add(co);
+            }
         }
     }
 }

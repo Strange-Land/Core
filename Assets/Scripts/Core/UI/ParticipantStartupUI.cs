@@ -1,11 +1,12 @@
 using System.Linq;
 using System.Text;
+using Core.Networking;
 using Newtonsoft.Json;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core
+namespace Core.UI
 {
     public class ParticipantStartupUI : MonoBehaviour
     {
