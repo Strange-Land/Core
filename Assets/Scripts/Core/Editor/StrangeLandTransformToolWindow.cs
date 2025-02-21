@@ -4,6 +4,7 @@ using Unity.Netcode.Components;
 using UnityEditor;
 using UnityEngine;
 using Utilities;
+using ClientNetworkTransform = Utilities.ClientNetworkTransform;
 
 namespace Core.Editor
 {
