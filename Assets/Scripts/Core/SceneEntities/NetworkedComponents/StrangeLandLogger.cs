@@ -77,7 +77,8 @@ namespace Core.SceneEntities.NetworkedComponents
         }
         public void StartRecording(string ScenarioName, string sessionName)
         {
-            var folderpath = Application.persistentDataPath + "/Logs";
+            var basePath = GlobalConfig.GetDataStoragePath();
+            var folderpath = Path.Combine(basePath, "Logs");
             Directory.CreateDirectory(folderpath);
             path = Path.Combine(folderpath, $"CSV_Scenario-{ScenarioName}_Session-{sessionName}_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
             InitLogs();
@@ -97,11 +98,11 @@ namespace Core.SceneEntities.NetworkedComponents
                 if (slt.LogPosition)
                 {
                     logItems.Add(new LogItem(slt.transform, PositionLog, labelPrefix + "_Pos"));
-                }            
+                }
                 if (slt.LogRotation)
                 {
                     logItems.Add(new LogItem(slt.transform, OrientationLog, labelPrefix + "_Rot"));
-                }        
+                }
                 if (slt.LogScale)
                 {
                     logItems.Add(new LogItem(slt.transform, ScaleLog, labelPrefix + "_Scale"));
@@ -193,8 +194,7 @@ namespace Core.SceneEntities.NetworkedComponents
             Array.Copy(BitConverter.GetBytes(euler.z), 0, buffer, 8, 4);
             return Convert.ToBase64String(buffer);
         }
-    
-        // I actually DK if I should record local or lossy(global) scale here
+
         private string ScaleLog(object o)
         {
             Transform t = (Transform)o;
@@ -205,7 +205,7 @@ namespace Core.SceneEntities.NetworkedComponents
             Array.Copy(BitConverter.GetBytes(scale.z), 0, buffer, 8, 4);
             return Convert.ToBase64String(buffer);
         }
-    
+
         private void FindClosestParentDisplayOrInteractable(Transform child, out ParticipantOrder pOrder, out string parentName)
         {
             pOrder = ParticipantOrder.None;
