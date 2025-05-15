@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace Core.Networking
     {
         public string DataStoragePath = "";
         public bool UseCustomDataPath = false;
+        public List<ClientOption> ClientOptions = new List<ClientOption>();
     }
 
     public static class GlobalConfig
@@ -33,9 +35,10 @@ namespace Core.Networking
 
         public static string GetDataStoragePath()
         {
-            if (Data.UseCustomDataPath && !string.IsNullOrEmpty(Data.DataStoragePath))
+            var data = Data;
+            if (data.UseCustomDataPath && !string.IsNullOrEmpty(data.DataStoragePath))
             {
-                return Data.DataStoragePath;
+                return data.DataStoragePath;
             }
             return Application.persistentDataPath;
         }
@@ -52,8 +55,56 @@ namespace Core.Networking
             SaveConfig();
         }
 
+        public static List<ClientOption> GetClientOptions()
+        {
+            if (!_isLoaded)
+            {
+                LoadConfig();
+            }
+
+            if (_data.ClientOptions == null || _data.ClientOptions.Count == 0)
+            {
+                InitializeDefaultClientOptions();
+            }
+
+            return _data.ClientOptions;
+        }
+
+        public static void SetClientOptions(List<ClientOption> options)
+        {
+            if (!_isLoaded)
+            {
+                LoadConfig();
+            }
+
+            _data.ClientOptions = options ?? new List<ClientOption>();
+            SaveConfig();
+        }
+
+        public static ClientOption GetClientOption(ParticipantOrder po)
+        {
+            var options = GetClientOptions();
+            return options.Find(x => x.PO == po);
+        }
+
+        private static void InitializeDefaultClientOptions()
+        {
+            _data.ClientOptions = new List<ClientOption>();
+            for (int i = 0; i < 6; i++)
+            {
+                ClientOption co = new ClientOption();
+                co.PO = (ParticipantOrder)i;
+                co.ClientDisplay = 0;
+                co.InteractableObject = 0;
+                _data.ClientOptions.Add(co);
+            }
+        }
+
         public static void LoadConfig()
         {
+            if (_isLoaded)
+                return;
+
             try
             {
                 if (File.Exists(ConfigFilePath))
@@ -63,18 +114,25 @@ namespace Core.Networking
 
                     if (_data == null)
                     {
-                        CreateDefaultConfig();
+                        _data = new GlobalConfigData();
+                        InitializeDefaultClientOptions();
+                    }
+                    else if (_data.ClientOptions == null)
+                    {
+                        InitializeDefaultClientOptions();
                     }
                 }
                 else
                 {
-                    CreateDefaultConfig();
+                    _data = new GlobalConfigData();
+                    InitializeDefaultClientOptions();
                 }
             }
             catch (Exception e)
             {
                 Debug.LogError($"Failed to load global config: {e.Message}");
-                CreateDefaultConfig();
+                _data = new GlobalConfigData();
+                InitializeDefaultClientOptions();
             }
 
             _isLoaded = true;
@@ -86,7 +144,8 @@ namespace Core.Networking
             {
                 if (_data == null)
                 {
-                    CreateDefaultConfig();
+                    _data = new GlobalConfigData();
+                    InitializeDefaultClientOptions();
                 }
 
                 string json = JsonUtility.ToJson(_data, true);
@@ -99,14 +158,10 @@ namespace Core.Networking
             }
         }
 
-        private static void CreateDefaultConfig()
-        {
-            _data = new GlobalConfigData();
-        }
-
         public static void ResetToDefault()
         {
-            CreateDefaultConfig();
+            _data = new GlobalConfigData();
+            InitializeDefaultClientOptions();
             SaveConfig();
         }
     }

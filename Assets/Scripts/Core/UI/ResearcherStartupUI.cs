@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Diagnostics;
-using System.IO;
 using Core.Networking;
 using SimpleFileBrowser;
 using TMPro;
@@ -15,9 +14,6 @@ namespace Core.UI
         [SerializeField] private Button OpenDataFolderButton;
         [SerializeField] private Button selectDataFolderButton;
         [SerializeField] private TMP_Text currentDataPathText;
-
-        private const string FILE_NAME = "ClientOptions.json";
-        private string FilePath => Application.persistentDataPath + "/" + FILE_NAME;
 
         private void Start()
         {
@@ -37,7 +33,7 @@ namespace Core.UI
 
         public void StartServer()
         {
-            SaveConfigToJson();
+            clientConfigSpawner.UpdateClientOptionsFromUI();
             ConnectionAndSpawning.Instance.StartAsServer();
         }
 
@@ -113,15 +109,6 @@ namespace Core.UI
             GlobalConfig.SetDataStoragePath("");
             UpdateDataPathDisplay();
             UnityEngine.Debug.Log("Data storage path reset to default.");
-        }
-
-        private void SaveConfigToJson()
-        {
-            clientConfigSpawner.UpdateClientOptionsFromUI();
-
-            string json = JsonUtility.ToJson(ClientOptions.Instance, true);
-
-            File.WriteAllText(FilePath, json);
         }
     }
 }

@@ -19,23 +19,11 @@ namespace Core.Networking
             internal set => _instance = value;
         }
 
-        public List<ClientOption> Options = new List<ClientOption>();
+        public List<ClientOption> Options => GlobalConfig.GetClientOptions();
 
         public ClientOption GetOption(ParticipantOrder po)
         {
-            return Options.Find(x => x.PO == po);
-        }
-    
-        private ClientOptions()
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                ClientOption co = new ClientOption();
-                co.PO = (ParticipantOrder)i; 
-                co.ClientDisplay = 0;
-                co.InteractableObject = 0;
-                Options.Add(co);
-            }
+            return GlobalConfig.GetClientOption(po);
         }
     }
 }
