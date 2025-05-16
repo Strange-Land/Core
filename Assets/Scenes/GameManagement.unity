@@ -128,8 +128,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 222213418}
-  - component: {fileID: 222213420}
   - component: {fileID: 222213421}
+  - component: {fileID: 222213420}
   m_Layer: 0
   m_Name: PresistentManagers
   m_TagString: Untagged
@@ -171,6 +171,7 @@ MonoBehaviour:
   _researcherPrefabs:
   - {fileID: 6949794861440479549, guid: 666692c767b3dec4ebf56a2e2caccc40, type: 3}
   - {fileID: 435767235896549270, guid: a21133e0020f17b4d88e91d7157f34ac, type: 3}
+  _researcherCameraPrefab: {fileID: 0}
   WaitingRoomScene:
     sceneAsset: {fileID: 102900000, guid: 9e3acfda9278e224b9ba91d51c6ce730, type: 3}
     required: 0
@@ -236,11 +237,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50295117e25e0fe4a84f26492fc85736, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _researcherStartupPrefab: {fileID: 3428880296775238896, guid: 0d15872ef92f0674aa679cddee18d561, type: 3}
-  _participantStartupPrefab: {fileID: 3428880296775238896, guid: 5574fc8a2298bc541ae63ed89e19802a, type: 3}
-  _serverPlatforms: 02000000070000000100000000000000
-  _clientPlatforms: 0b00000032000000
-  _startupMode: 1
+  _PCStartupPrefab: {fileID: 3428880296775238896, guid: 0d15872ef92f0674aa679cddee18d561, type: 3}
+  _VRStartupPrefab: {fileID: 3428880296775238896, guid: 5574fc8a2298bc541ae63ed89e19802a, type: 3}
+  _PCPlatforms: 02000000070000000000000001000000
+  _VRPlatforms: 0b00000032000000
+  _startupMode: 0
 --- !u!4 &348382685
 Transform:
   m_ObjectHideFlags: 0

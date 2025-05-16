@@ -8,8 +8,8 @@ namespace Core.Networking
     public class ParticipantOrderMapping
     {
         public Dictionary<ulong, ParticipantOrder> _clientToOrder = new Dictionary<ulong, ParticipantOrder>();
-        public Dictionary<ParticipantOrder, ulong> _orderToClient = new Dictionary<ParticipantOrder, ulong>();
-    
+        public Dictionary<ParticipantOrder, List<ulong>> _orderToClient = new Dictionary<ParticipantOrder, List<ulong>>();
+
         public ParticipantOrder GetPO(ulong id)
         {
             if (_clientToOrder.ContainsKey(id))
@@ -19,39 +19,82 @@ namespace Core.Networking
             Debug.LogError($"No ParticipantOrder found for id {id}");
             return ParticipantOrder.None;
         }
-    
-        public ulong GetClientID(ParticipantOrder po)
+
+        public List<ulong> GetClientIDs(ParticipantOrder po)
         {
             if (_orderToClient.ContainsKey(po))
             {
                 return _orderToClient[po];
             }
-            return 0;
+            return new List<ulong>();
         }
-    
+
+        public ulong GetClientID(ParticipantOrder po)
+        {
+            var clients = GetClientIDs(po);
+            return clients.Count > 0 ? clients[0] : 0;
+        }
+
         public bool AddParticipant(ParticipantOrder po, ulong id)
         {
-            if (!_orderToClient.ContainsKey(po))
+            if (po == ParticipantOrder.Researcher)
             {
-                _orderToClient.Add(po, id);
+                if (!_orderToClient.ContainsKey(po))
+                {
+                    _orderToClient.Add(po, new List<ulong>());
+                }
+                _orderToClient[po].Add(id);
                 _clientToOrder.Add(id, po);
                 return true;
             }
-            return false;
-        }
-    
-        public bool RemoveParticipant(ParticipantOrder po)
-        {
-            if (_orderToClient.ContainsKey(po))
+            else
             {
-                var id = _orderToClient[po];
-                _orderToClient.Remove(po);
+                if (!_orderToClient.ContainsKey(po))
+                {
+                    _orderToClient.Add(po, new List<ulong>());
+                    _orderToClient[po].Add(id);
+                    _clientToOrder.Add(id, po);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public bool RemoveParticipant(ulong id)
+        {
+            if (_clientToOrder.ContainsKey(id))
+            {
+                var po = _clientToOrder[id];
                 _clientToOrder.Remove(id);
+
+                if (_orderToClient.ContainsKey(po))
+                {
+                    _orderToClient[po].Remove(id);
+                    if (_orderToClient[po].Count == 0)
+                    {
+                        _orderToClient.Remove(po);
+                    }
+                }
                 return true;
             }
             return false;
         }
-    
+
+        public bool RemoveParticipant(ParticipantOrder po)
+        {
+            if (_orderToClient.ContainsKey(po) && _orderToClient[po].Count > 0)
+            {
+                var ids = new List<ulong>(_orderToClient[po]);
+                foreach (var id in ids)
+                {
+                    _clientToOrder.Remove(id);
+                }
+                _orderToClient.Remove(po);
+                return true;
+            }
+            return false;
+        }
+
         public ParticipantOrder[] GetAllConnectedPOs()
         {
             return _orderToClient.Keys.ToArray();

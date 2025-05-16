@@ -10,30 +10,31 @@ namespace Core.UI
 {
     public class ResearcherStartupUI : MonoBehaviour
     {
-        [SerializeField] private ClientConfigSpawner clientConfigSpawner;
-        [SerializeField] private Button OpenDataFolderButton;
-        [SerializeField] private Button selectDataFolderButton;
-        [SerializeField] private TMP_Text currentDataPathText;
+        [SerializeField] private ClientConfigSpawner _clientConfigSpawner;
+        [SerializeField] private Button _openDataFolderButton;
+        [SerializeField] private Button _selectDataFolderButton;
+        [SerializeField] private TMP_Text _currentDataPathText;
+        [SerializeField] private TMP_InputField _ipAddressInputField;
 
         private void Start()
         {
-            clientConfigSpawner.SpawnConfigs();
+            _clientConfigSpawner.SpawnConfigs();
             UpdateDataPathDisplay();
 
-            if (selectDataFolderButton != null)
+            if (_selectDataFolderButton != null)
             {
-                selectDataFolderButton.onClick.AddListener(SelectDataStorageFolder);
+                _selectDataFolderButton.onClick.AddListener(SelectDataStorageFolder);
             }
 
-            if (OpenDataFolderButton != null)
+            if (_openDataFolderButton != null)
             {
-                OpenDataFolderButton.onClick.AddListener(OpenDataFolder);
+                _openDataFolderButton.onClick.AddListener(OpenDataFolder);
             }
         }
 
         public void StartServer()
         {
-            clientConfigSpawner.UpdateClientOptionsFromUI();
+            _clientConfigSpawner.UpdateClientOptionsFromUI();
             ConnectionAndSpawning.Instance.StartAsServer();
         }
 
@@ -42,19 +43,17 @@ namespace Core.UI
             ConnectionAndSpawning.Instance.StartAsHost();
         }
 
+        public void StartClient()
+        {
+            ConnectionAndSpawning.Instance.StartAsClient(_ipAddressInputField.text);
+        }
+
         [ContextMenu("Open Data Folder")]
         public void OpenDataFolder()
         {
             string path = GlobalConfig.GetDataStoragePath();
-#if UNITY_STANDALONE_WIN
-            Process.Start("explorer.exe", path.Replace("/", "\\"));
-#elif UNITY_STANDALONE_OSX
-            Process.Start("open", path);
-#elif UNITY_STANDALONE_LINUX
-            Process.Start("xdg-open", path);
-#else
-            UnityEngine.Debug.Log("Open file explorer is not implemented on this platform.");
-#endif
+            GUIUtility.systemCopyBuffer = path;
+            StartCoroutine(ShowClipboardButtonFeedback());
         }
 
         [ContextMenu("Select Data Storage Folder")]
@@ -85,20 +84,39 @@ namespace Core.UI
 
         private void UpdateDataPathDisplay()
         {
-            if (currentDataPathText != null)
+            if (_currentDataPathText != null)
             {
                 string currentPath = GlobalConfig.GetDataStoragePath();
                 bool isCustom = GlobalConfig.Data.UseCustomDataPath;
 
                 if (isCustom)
                 {
-                    currentDataPathText.text = $"Data Path: {currentPath}";
-                    currentDataPathText.color = Color.green;
+                    _currentDataPathText.text = $"Data Path: {currentPath}";
+                    _currentDataPathText.color = Color.green;
                 }
                 else
                 {
-                    currentDataPathText.text = $"Please select a data storage folder";
-                    currentDataPathText.color = Color.red;
+                    _currentDataPathText.text = $"Please select a data storage folder";
+                    _currentDataPathText.color = Color.red;
+                }
+            }
+        }
+
+        private IEnumerator ShowClipboardButtonFeedback()
+        {
+            if (_openDataFolderButton != null)
+            {
+                TMP_Text buttonTMPText = _openDataFolderButton.GetComponentInChildren<TMP_Text>();
+
+                if (buttonTMPText != null)
+                {
+                    string originalText = buttonTMPText.text;
+                    Color originalColor = buttonTMPText.color;
+                    buttonTMPText.color = Color.red;
+                    buttonTMPText.text = "Copied to clipboard!";
+                    yield return new WaitForSeconds(1.5f);
+                    buttonTMPText.text = originalText;
+                    buttonTMPText.color = originalColor;
                 }
             }
         }

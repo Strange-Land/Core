@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Core.Scenario;
 using Core.SceneEntities.NetworkedComponents.ClientInterface;
@@ -18,7 +19,6 @@ Loading Visuals -> Ready: SceneEvent_Server (visual scene load completed)
 Ready -> Interact: SwitchToDriving that triggers from UI
 Interact -> QN: (Optional?) SwitchToQuestionnaire that triggers from UI
 AnyState -> Waiting Room: trigger from UI   
-
 */
 
 namespace Core.Networking
@@ -31,6 +31,7 @@ namespace Core.Networking
             NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         [SerializeField] private List<GameObject> _researcherPrefabs;
+        [SerializeField] private GameObject _researcherCameraPrefab;
 
         public SceneField WaitingRoomScene;
         public List<SceneField> ScenarioScenes = new List<SceneField>();
@@ -41,8 +42,8 @@ namespace Core.Networking
         public ParticipantOrder PO { get; private set; } = ParticipantOrder.None;
 
         private Dictionary<ParticipantOrder, ClientDisplay> POToClientDisplay = new Dictionary<ParticipantOrder, ClientDisplay>();
-        // change to one to one
         private Dictionary<ParticipantOrder, InteractableObject> POToInteractableObjects = new Dictionary<ParticipantOrder, InteractableObject>();
+        private Dictionary<ulong, ClientDisplay> ResearcherCameras = new Dictionary<ulong, ClientDisplay>();
 
         private void Awake()
         {
@@ -80,6 +81,7 @@ namespace Core.Networking
             NetworkManager.Singleton.OnServerStarted += ServerStarted;
             NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
             NetworkManager.Singleton.OnClientConnectedCallback += ClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += ClientDisconnected;
 
             _currentState = new Default();
             _currentState.EnterState(this);
@@ -89,6 +91,12 @@ namespace Core.Networking
 
         public void StartAsClient()
         {
+            NetworkManager.Singleton.StartClient();
+        }
+
+        public void StartAsClient(string ipAddress)
+        {
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(ipAddress);
             NetworkManager.Singleton.StartClient();
         }
 
@@ -126,15 +134,38 @@ namespace Core.Networking
             SwitchToState(new WaitingRoom());
         }
 
+        private void ClientDisconnected(ulong clientId)
+        {
+            ParticipantOrder po = Participants.GetPO(clientId);
+
+            if (po == ParticipantOrder.Researcher && ResearcherCameras.ContainsKey(clientId))
+            {
+                var camera = ResearcherCameras[clientId];
+                if (camera != null && camera.gameObject.GetComponent<NetworkObject>() != null)
+                {
+                    camera.gameObject.GetComponent<NetworkObject>().Despawn(true);
+                }
+                ResearcherCameras.Remove(clientId);
+            }
+            else
+            {
+                POToClientDisplay.Remove(po);
+                if (POToInteractableObjects.ContainsKey(po))
+                {
+                    POToInteractableObjects.Remove(po);
+                }
+            }
+
+            Participants.RemoveParticipant(clientId);
+        }
+
         private void SceneEvent_Server(SceneEvent sceneEvent)
         {
             switch (sceneEvent.SceneEventType)
             {
-                // Trigger once on server scene load completed
                 case SceneEventType.LoadEventCompleted:
                     LoadEventCompleted(sceneEvent);
                     break;
-                // Trigger once on client scene load completed
                 case SceneEventType.LoadComplete:
                     if (sceneEvent.ClientId == 0)
                     {
@@ -144,7 +175,11 @@ namespace Core.Networking
                     if (sceneEvent.LoadSceneMode == LoadSceneMode.Additive && GetScenarioManager().HasVisualScene() ||
                         (sceneEvent.LoadSceneMode == LoadSceneMode.Single && !GetScenarioManager().HasVisualScene()))
                     {
-                        SpawnInteractableObject(sceneEvent.ClientId);
+                        ParticipantOrder po = Participants.GetPO(sceneEvent.ClientId);
+                        if (po != ParticipantOrder.Researcher)
+                        {
+                            SpawnInteractableObject(sceneEvent.ClientId);
+                        }
                     }
                     break;
             }
@@ -178,18 +213,54 @@ namespace Core.Networking
         {
             yield return new WaitForEndOfFrame();
 
-            ScenarioManager sm = GetScenarioManager();
-
             ParticipantOrder po = Participants.GetPO(clientId);
-            Pose pose = sm.GetSpawnPose(po);
-            GameObject clientInterfaceInstance = Instantiate(GetClientDisplayPrefab(po), pose.position, pose.rotation);
-            Debug.Log($"Spawned {clientInterfaceInstance.name} for PO {po}");
 
-            clientInterfaceInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+            if (po == ParticipantOrder.Researcher)
+            {
+                SpawnResearcherCamera(clientId);
+            }
+            else
+            {
+                ScenarioManager sm = GetScenarioManager();
+                Pose pose = sm.GetSpawnPose(po);
+                GameObject clientInterfaceInstance = Instantiate(GetClientDisplayPrefab(po), pose.position, pose.rotation);
+                Debug.Log($"Spawned {clientInterfaceInstance.name} for PO {po}");
 
-            ClientDisplay ci = clientInterfaceInstance.GetComponent<ClientDisplay>();
-            POToClientDisplay.Add(po, ci);
-            ci.SetParticipantOrder(po);
+                clientInterfaceInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+
+                ClientDisplay ci = clientInterfaceInstance.GetComponent<ClientDisplay>();
+                POToClientDisplay.Add(po, ci);
+                ci.SetParticipantOrder(po);
+            }
+        }
+
+        private void SpawnResearcherCamera(ulong clientId)
+        {
+            if (_researcherCameraPrefab == null)
+            {
+                Debug.LogError("ResearcherCameraPrefab is not assigned!");
+                return;
+            }
+
+            Vector3 spawnPosition = Vector3.zero;
+            Quaternion spawnRotation = Quaternion.identity;
+
+            ScenarioManager sm = GetScenarioManager();
+            if (sm != null)
+            {
+                Pose researcherPose = sm.GetSpawnPose(ParticipantOrder.Researcher);
+                spawnPosition = researcherPose.position + Vector3.up * ResearcherCameras.Count * 2f;
+                spawnRotation = researcherPose.rotation;
+            }
+
+            GameObject researcherCameraInstance = Instantiate(_researcherCameraPrefab, spawnPosition, spawnRotation);
+            researcherCameraInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+
+            ClientDisplay camera = researcherCameraInstance.GetComponent<ClientDisplay>();
+            camera.SetParticipantOrder(ParticipantOrder.Researcher);
+            ResearcherCameras.Add(clientId, camera);
+
+            Debug.Log($"Spawned researcher camera for client {clientId}");
         }
 
         private void SpawnInteractableObject(ulong clientId)
@@ -199,24 +270,22 @@ namespace Core.Networking
 
         private IEnumerator IESpawnInteractableObject(ulong clientId)
         {
-            yield return new WaitUntil(() => POToClientDisplay.ContainsKey(Participants.GetPO(clientId)));
-
             ParticipantOrder po = Participants.GetPO(clientId);
+            yield return new WaitUntil(() => POToClientDisplay.ContainsKey(po));
 
             ScenarioManager sm = GetScenarioManager();
             Pose pose = sm.GetSpawnPose(po);
             GameObject interactableInstance = Instantiate(GetInteractableObjectPrefab(po), pose.position, pose.rotation);
             Debug.Log($"Spawned {interactableInstance.name} for PO {po}");
 
-            // different depending on SO config
             interactableInstance.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
 
             InteractableObject io = interactableInstance.GetComponent<InteractableObject>();
             io.SetParticipantOrder(po);
             POToInteractableObjects[po] = io;
 
-            ClientDisplay cientDisplay = POToClientDisplay[po];
-            cientDisplay.AssignFollowTransform(io, clientId);
+            ClientDisplay clientDisplay = POToClientDisplay[po];
+            clientDisplay.AssignFollowTransform(io, clientId);
         }
 
         public void SwitchToState(IServerState newState)
@@ -268,14 +337,16 @@ namespace Core.Networking
             return FindFirstObjectByType<ScenarioManager>();
         }
 
-        // expose simple APIs for other classes to trigger
         public void SwitchToLoading(string scenarioName)
         {
-            foreach (ParticipantOrder po in POToInteractableObjects.Keys)
+            foreach (ParticipantOrder po in POToInteractableObjects.Keys.ToList())
             {
-                foreach (InteractableObject io in POToInteractableObjects.Values)
+                if (POToClientDisplay.ContainsKey(po))
                 {
-                    POToClientDisplay[po].De_AssignFollowTransform(io.GetComponent<NetworkObject>());
+                    foreach (InteractableObject io in POToInteractableObjects.Values)
+                    {
+                        POToClientDisplay[po].De_AssignFollowTransform(io.GetComponent<NetworkObject>());
+                    }
                 }
             }
 
@@ -287,13 +358,20 @@ namespace Core.Networking
         {
             foreach (var po in Participants.GetAllConnectedPOs())
             {
-                DestroyAllInteractableObjects(po);
+                if (po != ParticipantOrder.Researcher)
+                {
+                    DestroyAllInteractableObjects(po);
+                }
             }
         }
 
         private void DestroyAllInteractableObjects(ParticipantOrder po)
         {
-            POToInteractableObjects[po].gameObject.GetComponent<NetworkObject>().Despawn(true);
+            if (POToInteractableObjects.ContainsKey(po))
+            {
+                POToInteractableObjects[po].gameObject.GetComponent<NetworkObject>().Despawn(true);
+                POToInteractableObjects.Remove(po);
+            }
         }
 
         [ContextMenu("SwitchToWaitingRoom")]
@@ -312,8 +390,5 @@ namespace Core.Networking
         {
             return _currentState.ToString();
         }
-
     }
-
 }
-

@@ -7,26 +7,35 @@ namespace Core.Networking
 {
     public class StartupManager : MonoBehaviour
     {
-        [SerializeField] private GameObject _researcherStartupPrefab;
-        [SerializeField] private GameObject _participantStartupPrefab;
+        [SerializeField] private GameObject _PCStartupPrefab;
+        [SerializeField] private GameObject _VRStartupPrefab;
 
-        [SerializeField] private List<RuntimePlatform> _serverPlatforms;
-        [SerializeField] private List<RuntimePlatform> _clientPlatforms;
+        [SerializeField] private List<RuntimePlatform> _PCPlatforms;
+        [SerializeField] private List<RuntimePlatform> _VRPlatforms;
 
         [Tooltip("Use Platform for builds, use PlayModeTag for editor (multiplayer center)")]
         [SerializeField] private StartupMode _startupMode;
         private string[] _playModeTags;
-        
+
         private enum StartupMode
         {
             Platform,
             PlayModeTag
         }
-        
+
         private void Awake()
         {
-            _playModeTags = CurrentPlayer.ReadOnlyTags();
-            
+            // use tags if in editor, use platform if in build
+
+            if (Application.isEditor)
+            {
+                _startupMode = StartupMode.PlayModeTag;
+            }
+            else
+            {
+                _startupMode = StartupMode.Platform;
+            }
+
             switch (_startupMode)
             {
                 case StartupMode.Platform:
@@ -37,48 +46,49 @@ namespace Core.Networking
                     break;
             }
         }
-        
+
         private void TagStartup()
         {
-            if (_playModeTags.Contains("Researcher"))
+            _playModeTags = CurrentPlayer.ReadOnlyTags();
+            if (_playModeTags.Contains("PC"))
             {
-                StartResearcherStartup();
+                StartPCStartup();
             }
-            else if (_playModeTags.Contains("Participant"))
+            else if (_playModeTags.Contains("VR"))
             {
-                StartParticipantStartup();
+                StartVRStartup();
             }
             else
             {
                 Debug.LogError("Play mode tag not supported");
             }
         }
-        
+
         private void PlatformStartup()
         {
-            if (_serverPlatforms.Contains(Application.platform))
+            if (_PCPlatforms.Contains(Application.platform))
             {
-                StartResearcherStartup();
+                StartPCStartup();
             }
-            else if (_clientPlatforms.Contains(Application.platform))
+            else if (_VRPlatforms.Contains(Application.platform))
             {
-                StartParticipantStartup();
+                StartVRStartup();
             }
             else
             {
                 Debug.LogError("Platform not supported");
             }
         }
-        
-        private void StartResearcherStartup()
+
+        private void StartPCStartup()
         {
-            Instantiate(_researcherStartupPrefab);
+            Instantiate(_PCStartupPrefab);
             Destroy(this);
         }
-        
-        private void StartParticipantStartup()
+
+        private void StartVRStartup()
         {
-            Instantiate(_participantStartupPrefab);
+            Instantiate(_VRStartupPrefab);
             Destroy(this);
         }
     }
