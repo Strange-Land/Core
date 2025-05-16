@@ -26,9 +26,9 @@ namespace Core.Editor
             networkTransformType = (NetworkTransformType)EditorGUILayout.EnumPopup("Network Transform Type", networkTransformType);
 
             float oldLabelWidth = EditorGUIUtility.labelWidth;
-            EditorGUIUtility.labelWidth = 200f; 
+            EditorGUIUtility.labelWidth = 200f;
             syncWithStrangeLandTransform = EditorGUILayout.Toggle("Sync With StrangeLandTransform", syncWithStrangeLandTransform);
-            EditorGUIUtility.labelWidth = oldLabelWidth; 
+            EditorGUIUtility.labelWidth = oldLabelWidth;
 
             EditorGUILayout.Space(10);
 
@@ -52,7 +52,7 @@ namespace Core.Editor
 
             foreach (Object obj in selectedObjects)
             {
-                if (PrefabUtility.GetPrefabAssetType(obj) == PrefabAssetType.NotAPrefab) 
+                if (PrefabUtility.GetPrefabAssetType(obj) == PrefabAssetType.NotAPrefab)
                 {
                     continue;
                 }
@@ -69,7 +69,7 @@ namespace Core.Editor
             Did quite some research this seems to be the most efficient way
             Very open to suggestions 
             */
-            
+
                 GameObject tempInstance = PrefabUtility.InstantiatePrefab(prefabRoot) as GameObject;
                 if (!tempInstance)
                     continue;
@@ -80,12 +80,41 @@ namespace Core.Editor
                 {
                     NetworkTransform netTrans = slt.gameObject.GetComponent<NetworkTransform>();
                     ClientNetworkTransform clientNetTrans = slt.gameObject.GetComponent<ClientNetworkTransform>();
-                
-                    if (netTrans != null || clientNetTrans != null)
+
+                    if (netTrans != null)
                     {
+                        netTrans.SyncPositionX = slt.LogPosition;
+                        netTrans.SyncPositionY = slt.LogPosition;
+                        netTrans.SyncPositionZ = slt.LogPosition;
+
+                        netTrans.SyncRotAngleX = slt.LogRotation;
+                        netTrans.SyncRotAngleY = slt.LogRotation;
+                        netTrans.SyncRotAngleZ = slt.LogRotation;
+
+                        netTrans.SyncScaleX = slt.LogScale;
+                        netTrans.SyncScaleY = slt.LogScale;
+                        netTrans.SyncScaleZ = slt.LogScale;
+                        continue;
+
+                    }
+
+                    if (clientNetTrans != null)
+                    {
+                        clientNetTrans.SyncPositionX = slt.LogPosition;
+                        clientNetTrans.SyncPositionY = slt.LogPosition;
+                        clientNetTrans.SyncPositionZ = slt.LogPosition;
+
+                        clientNetTrans.SyncRotAngleX = slt.LogRotation;
+                        clientNetTrans.SyncRotAngleY = slt.LogRotation;
+                        clientNetTrans.SyncRotAngleZ = slt.LogRotation;
+
+                        clientNetTrans.SyncScaleX = slt.LogScale;
+                        clientNetTrans.SyncScaleY = slt.LogScale;
+                        clientNetTrans.SyncScaleZ = slt.LogScale;
                         continue;
                     }
-                
+
+
                     if (networkTransformType == NetworkTransformType.NetworkTransform)
                     {
                         if (netTrans == null)
@@ -100,11 +129,11 @@ namespace Core.Editor
                             netTrans.SyncPositionX = slt.LogPosition;
                             netTrans.SyncPositionY = slt.LogPosition;
                             netTrans.SyncPositionZ = slt.LogPosition;
-                        
+
                             netTrans.SyncRotAngleX = slt.LogRotation;
                             netTrans.SyncRotAngleY = slt.LogRotation;
                             netTrans.SyncRotAngleZ = slt.LogRotation;
-                        
+
                             netTrans.SyncScaleX = slt.LogScale;
                             netTrans.SyncScaleY = slt.LogScale;
                             netTrans.SyncScaleZ = slt.LogScale;
@@ -124,11 +153,11 @@ namespace Core.Editor
                             clientNetTrans.SyncPositionX = slt.LogPosition;
                             clientNetTrans.SyncPositionY = slt.LogPosition;
                             clientNetTrans.SyncPositionZ = slt.LogPosition;
-                        
+
                             clientNetTrans.SyncRotAngleX = slt.LogRotation;
                             clientNetTrans.SyncRotAngleY = slt.LogRotation;
                             clientNetTrans.SyncRotAngleZ = slt.LogRotation;
-                        
+
                             clientNetTrans.SyncScaleX = slt.LogScale;
                             clientNetTrans.SyncScaleY = slt.LogScale;
                             clientNetTrans.SyncScaleZ = slt.LogScale;

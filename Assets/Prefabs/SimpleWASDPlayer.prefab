@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 3410162241365922328}
   - component: {fileID: 3151987473251914747}
   - component: {fileID: 2852354349641712495}
-  - component: {fileID: 497839406073535586}
+  - component: {fileID: 2388866551625568989}
   m_Layer: 0
   m_Name: SimpleWASDPlayer
   m_TagString: Untagged
@@ -191,8 +191,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2908155799
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 3881727784
+  InScenePlacedSourceGlobalObjectIdHash: 2908155799
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OverrideName: 
-  LogPosition: 0
+  LogPosition: 1
   LogRotation: 1
   LogScale: 1
   SyncTransforms: 0
@@ -289,7 +289,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &497839406073535586
+--- !u!114 &2388866551625568989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -298,7 +298,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7066196139981327729}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5abfce83aadd948498d4990c645a017b, type: 3}
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
@@ -323,6 +323,5 @@ MonoBehaviour:
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
   SwitchTransformSpaceWhenParented: 0
-  Interpolate: 0
+  Interpolate: 1
   SlerpPosition: 0
-  StaleDataHandling: 1

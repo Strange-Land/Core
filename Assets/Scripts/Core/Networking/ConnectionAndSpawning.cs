@@ -265,11 +265,27 @@ namespace Core.Networking
                 spawnRotation = researcherPose.rotation;
             }
 
-            GameObject researcherCameraInstance = Instantiate(_researcherCameraPrefab, spawnPosition, spawnRotation);
-            ClientDisplay camera = researcherCameraInstance.GetComponent<ClientDisplay>();
-            camera.SetParticipantOrder(ParticipantOrder.Researcher);
+            SpawnResearcherCameraClientRpc(spawnPosition, spawnRotation, new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = new ulong[] { clientId }
+                }
+            });
+        }
 
-            Debug.Log($"Spawned researcher camera for client {clientId}");
+        [ClientRpc]
+        private void SpawnResearcherCameraClientRpc(Vector3 spawnPosition, Quaternion spawnRotation, ClientRpcParams clientRpcParams = default)
+        {
+            if (_researcherCameraPrefab == null)
+            {
+                Debug.LogError("ResearcherCameraPrefab is not assigned!");
+                return;
+            }
+
+            GameObject researcherCameraInstance = Instantiate(_researcherCameraPrefab, spawnPosition, spawnRotation);
+            DontDestroyOnLoad(researcherCameraInstance);
+            Debug.Log($"Spawned researcher camera locally on client {NetworkManager.Singleton.LocalClientId}");
         }
 
         private void SpawnInteractableObject(ulong clientId)
