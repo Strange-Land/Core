@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Core.Networking;
 using Core.SceneEntities.NetworkedComponents.ClientInterface;
@@ -52,7 +53,7 @@ namespace Core.UI
         {
             if (spawnedConfigUIs == null || spawnedConfigUIs.Length < 6) return;
 
-            var updatedOptions = new System.Collections.Generic.List<ClientOption>();
+            var updatedOptions = new List<ClientOption>();
 
             for (int i = 0; i < 6; i++)
             {

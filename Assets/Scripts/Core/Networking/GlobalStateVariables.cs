@@ -2,20 +2,23 @@ using System;
 
 namespace Core.Networking
 {
-    public enum ParticipantOrder {
+    public enum ParticipantOrder
+    {
         A,
         B,
         C,
         D,
         E,
         F,
+        Researcher,
         None
     };
 
-    public enum Language {
-        English, 
-        Hebrew, 
-        Chinese, 
+    public enum Language
+    {
+        English,
+        Hebrew,
+        Chinese,
         German
     }
 
