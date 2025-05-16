@@ -83,35 +83,12 @@ namespace Core.Editor
 
                     if (netTrans != null)
                     {
-                        netTrans.SyncPositionX = slt.LogPosition;
-                        netTrans.SyncPositionY = slt.LogPosition;
-                        netTrans.SyncPositionZ = slt.LogPosition;
-
-                        netTrans.SyncRotAngleX = slt.LogRotation;
-                        netTrans.SyncRotAngleY = slt.LogRotation;
-                        netTrans.SyncRotAngleZ = slt.LogRotation;
-
-                        netTrans.SyncScaleX = slt.LogScale;
-                        netTrans.SyncScaleY = slt.LogScale;
-                        netTrans.SyncScaleZ = slt.LogScale;
-                        continue;
-
+                        DestroyImmediate(netTrans);
                     }
 
                     if (clientNetTrans != null)
                     {
-                        clientNetTrans.SyncPositionX = slt.LogPosition;
-                        clientNetTrans.SyncPositionY = slt.LogPosition;
-                        clientNetTrans.SyncPositionZ = slt.LogPosition;
-
-                        clientNetTrans.SyncRotAngleX = slt.LogRotation;
-                        clientNetTrans.SyncRotAngleY = slt.LogRotation;
-                        clientNetTrans.SyncRotAngleZ = slt.LogRotation;
-
-                        clientNetTrans.SyncScaleX = slt.LogScale;
-                        clientNetTrans.SyncScaleY = slt.LogScale;
-                        clientNetTrans.SyncScaleZ = slt.LogScale;
-                        continue;
+                        DestroyImmediate(clientNetTrans);
                     }
 
 
@@ -161,6 +138,8 @@ namespace Core.Editor
                             clientNetTrans.SyncScaleX = slt.LogScale;
                             clientNetTrans.SyncScaleY = slt.LogScale;
                             clientNetTrans.SyncScaleZ = slt.LogScale;
+
+                            clientNetTrans.AuthorityMode = NetworkTransform.AuthorityModes.Owner;
                             hasChanges = true;
                         }
                     }

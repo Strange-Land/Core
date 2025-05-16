@@ -120,6 +120,7 @@ namespace Core.SceneEntities.NetworkedComponents
             ScenarioStartTime = Time.time;
             RECORDING = true;
         }
+
         [ContextMenu("StopRecording")]
         public void StopRecording()
         {

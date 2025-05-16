@@ -9,7 +9,5 @@ namespace Core.SceneEntities.NetworkedComponents
         public bool LogPosition = true;
         public bool LogRotation = true;
         public bool LogScale = true;
-
-        public bool SyncTransforms = true;
     }
 }
