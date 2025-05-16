@@ -1,5 +1,6 @@
+using System;
 using System.Collections;
-using System.Diagnostics;
+using System.Linq;
 using Core.Networking;
 using SimpleFileBrowser;
 using TMPro;
@@ -13,13 +14,19 @@ namespace Core.UI
         [SerializeField] private ClientConfigSpawner _clientConfigSpawner;
         [SerializeField] private Button _openDataFolderButton;
         [SerializeField] private Button _selectDataFolderButton;
+        [SerializeField] private TMP_Dropdown _hostPODropdown;
+        [SerializeField] private TMP_Dropdown _clientPODropdown;
         [SerializeField] private TMP_Text _currentDataPathText;
         [SerializeField] private TMP_InputField _ipAddressInputField;
+
+        private ParticipantOrder _hostPO;
+        private ParticipantOrder _clientPO;
 
         private void Start()
         {
             _clientConfigSpawner.SpawnConfigs();
             UpdateDataPathDisplay();
+            InitializeIPAddress();
 
             if (_selectDataFolderButton != null)
             {
@@ -30,6 +37,39 @@ namespace Core.UI
             {
                 _openDataFolderButton.onClick.AddListener(OpenDataFolder);
             }
+
+            if (_ipAddressInputField != null)
+            {
+                _ipAddressInputField.onEndEdit.AddListener(OnIPAddressChanged);
+            }
+
+            // initialize dropdowns with participant order
+            _hostPODropdown.ClearOptions();
+            _clientPODropdown.ClearOptions();
+            _hostPODropdown.AddOptions(Enum.GetNames(typeof(ParticipantOrder)).ToList());
+            _clientPODropdown.AddOptions(Enum.GetNames(typeof(ParticipantOrder)).ToList());
+
+            _hostPODropdown.value = 0;
+            _clientPODropdown.value = 0;
+
+            _hostPODropdown.RefreshShownValue();
+            _clientPODropdown.RefreshShownValue();
+
+            _hostPODropdown.onValueChanged.AddListener(po => _hostPO = (ParticipantOrder)po);
+            _clientPODropdown.onValueChanged.AddListener(po => _clientPO = (ParticipantOrder)po);
+        }
+
+        private void InitializeIPAddress()
+        {
+            if (_ipAddressInputField != null)
+            {
+                _ipAddressInputField.text = GlobalConfig.GetIPAddress();
+            }
+        }
+
+        private void OnIPAddressChanged(string newIPAddress)
+        {
+            GlobalConfig.SetIPAddress(newIPAddress);
         }
 
         public void StartServer()
@@ -40,12 +80,12 @@ namespace Core.UI
 
         public void StartHost()
         {
-            ConnectionAndSpawning.Instance.StartAsHost();
+            ConnectionAndSpawning.Instance.StartAsHost(_hostPO);
         }
 
         public void StartClient()
         {
-            ConnectionAndSpawning.Instance.StartAsClient(_ipAddressInputField.text);
+            ConnectionAndSpawning.Instance.StartAsClient(_ipAddressInputField.text, _clientPO);
         }
 
         [ContextMenu("Open Data Folder")]

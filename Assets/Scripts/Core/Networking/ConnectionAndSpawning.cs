@@ -7,6 +7,7 @@ using Core.SceneEntities.NetworkedComponents.ClientInterface;
 using Core.SceneEntities.NetworkedComponents.InteractableObject;
 using Newtonsoft.Json;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utilities.SceneField;
@@ -43,7 +44,6 @@ namespace Core.Networking
 
         private Dictionary<ParticipantOrder, ClientDisplay> POToClientDisplay = new Dictionary<ParticipantOrder, ClientDisplay>();
         private Dictionary<ParticipantOrder, InteractableObject> POToInteractableObjects = new Dictionary<ParticipantOrder, InteractableObject>();
-        private Dictionary<ulong, ClientDisplay> ResearcherCameras = new Dictionary<ulong, ClientDisplay>();
 
         private void Awake()
         {
@@ -94,14 +94,33 @@ namespace Core.Networking
             NetworkManager.Singleton.StartClient();
         }
 
-        public void StartAsClient(string ipAddress)
+        public void StartAsClient(string ipAddress, ParticipantOrder po)
         {
-            NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(ipAddress);
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(
+                ipAddress,
+                (ushort)7777
+            );
+            JoinParameters joinParams = new JoinParameters()
+            {
+                PO = po
+            };
+
+            var jsonString = JsonConvert.SerializeObject(joinParams);
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(jsonString);
+
             NetworkManager.Singleton.StartClient();
         }
 
-        public void StartAsHost()
+        public void StartAsHost(ParticipantOrder po)
         {
+            JoinParameters joinParams = new JoinParameters()
+            {
+                PO = po
+            };
+
+            var jsonString = JsonConvert.SerializeObject(joinParams);
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = Encoding.ASCII.GetBytes(jsonString);
+
             NetworkManager.Singleton.StartHost();
         }
 
@@ -138,22 +157,14 @@ namespace Core.Networking
         {
             ParticipantOrder po = Participants.GetPO(clientId);
 
-            if (po == ParticipantOrder.Researcher && ResearcherCameras.ContainsKey(clientId))
-            {
-                var camera = ResearcherCameras[clientId];
-                if (camera != null && camera.gameObject.GetComponent<NetworkObject>() != null)
-                {
-                    camera.gameObject.GetComponent<NetworkObject>().Despawn(true);
-                }
-                ResearcherCameras.Remove(clientId);
-            }
-            else
+            if (POToClientDisplay.ContainsKey(po))
             {
                 POToClientDisplay.Remove(po);
-                if (POToInteractableObjects.ContainsKey(po))
-                {
-                    POToInteractableObjects.Remove(po);
-                }
+            }
+
+            if (POToInteractableObjects.ContainsKey(po))
+            {
+                POToInteractableObjects.Remove(po);
             }
 
             Participants.RemoveParticipant(clientId);
@@ -234,6 +245,7 @@ namespace Core.Networking
             }
         }
 
+        // for now researcher camera is just a local instance on the client, not networked
         private void SpawnResearcherCamera(ulong clientId)
         {
             if (_researcherCameraPrefab == null)
@@ -249,16 +261,13 @@ namespace Core.Networking
             if (sm != null)
             {
                 Pose researcherPose = sm.GetSpawnPose(ParticipantOrder.Researcher);
-                spawnPosition = researcherPose.position + Vector3.up * ResearcherCameras.Count * 2f;
+                spawnPosition = researcherPose.position;
                 spawnRotation = researcherPose.rotation;
             }
 
             GameObject researcherCameraInstance = Instantiate(_researcherCameraPrefab, spawnPosition, spawnRotation);
-            researcherCameraInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-
             ClientDisplay camera = researcherCameraInstance.GetComponent<ClientDisplay>();
             camera.SetParticipantOrder(ParticipantOrder.Researcher);
-            ResearcherCameras.Add(clientId, camera);
 
             Debug.Log($"Spawned researcher camera for client {clientId}");
         }

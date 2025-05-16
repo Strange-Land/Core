@@ -11,6 +11,7 @@ namespace Core.Networking
         public string DataStoragePath = "";
         public bool UseCustomDataPath = false;
         public List<ClientOption> ClientOptions = new List<ClientOption>();
+        public string IPAddress = "127.0.0.1";
     }
 
     public static class GlobalConfig
@@ -52,6 +53,28 @@ namespace Core.Networking
 
             _data.DataStoragePath = path;
             _data.UseCustomDataPath = !string.IsNullOrEmpty(path);
+            SaveConfig();
+        }
+
+        public static string GetIPAddress()
+        {
+            var data = Data;
+            if (string.IsNullOrEmpty(data.IPAddress))
+            {
+                data.IPAddress = "127.0.0.1";
+                SaveConfig();
+            }
+            return data.IPAddress;
+        }
+
+        public static void SetIPAddress(string ipAddress)
+        {
+            if (!_isLoaded)
+            {
+                LoadConfig();
+            }
+
+            _data.IPAddress = string.IsNullOrEmpty(ipAddress) ? "127.0.0.1" : ipAddress;
             SaveConfig();
         }
 
@@ -117,9 +140,17 @@ namespace Core.Networking
                         _data = new GlobalConfigData();
                         InitializeDefaultClientOptions();
                     }
-                    else if (_data.ClientOptions == null)
+                    else
                     {
-                        InitializeDefaultClientOptions();
+                        if (_data.ClientOptions == null)
+                        {
+                            InitializeDefaultClientOptions();
+                        }
+
+                        if (string.IsNullOrEmpty(_data.IPAddress))
+                        {
+                            _data.IPAddress = "127.0.0.1";
+                        }
                     }
                 }
                 else

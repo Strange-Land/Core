@@ -171,7 +171,7 @@ MonoBehaviour:
   _researcherPrefabs:
   - {fileID: 6949794861440479549, guid: 666692c767b3dec4ebf56a2e2caccc40, type: 3}
   - {fileID: 435767235896549270, guid: a21133e0020f17b4d88e91d7157f34ac, type: 3}
-  _researcherCameraPrefab: {fileID: 0}
+  _researcherCameraPrefab: {fileID: 6949794861440479549, guid: 666692c767b3dec4ebf56a2e2caccc40, type: 3}
   WaitingRoomScene:
     sceneAsset: {fileID: 102900000, guid: 9e3acfda9278e224b9ba91d51c6ce730, type: 3}
     required: 0
