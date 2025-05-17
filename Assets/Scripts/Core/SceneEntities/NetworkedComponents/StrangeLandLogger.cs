@@ -266,9 +266,12 @@ namespace Core.SceneEntities
             RECORDING = false;
             CloseLogs();
 
-            if (NetworkManager.Singleton.IsServer)
+            if (NetworkManager.Singleton != null)
             {
-                LogRecordedObjects(false);
+                if (NetworkManager.Singleton.IsServer)
+                {
+                    LogRecordedObjects(false);
+                }
             }
             doneSending = true;
         }
