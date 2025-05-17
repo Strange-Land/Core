@@ -66,7 +66,7 @@ namespace Core.SceneEntities.NetworkedComponents
             return _participantOrder.Value;
         }
 
-        public abstract void AssignFollowTransform(InteractableObject _interactableObject, ulong targetClient);
+        public abstract bool AssignFollowTransform(InteractableObject _interactableObject, ulong targetClient);
         public abstract InteractableObject GetFollowTransform();
 
         public virtual void De_AssignFollowTransform(NetworkObject netobj)

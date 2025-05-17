@@ -300,19 +300,31 @@ namespace Core.Networking
             ScenarioManager sm = GetScenarioManager();
             Pose pose = sm.GetSpawnPose(po);
             GameObject interactableInstance = Instantiate(GetInteractableObjectPrefab(po), pose.position, pose.rotation);
+            InteractableObject io = interactableInstance.GetComponent<InteractableObject>();
+            ClientDisplay clientDisplay = POToClientDisplay[po];
+            // io.OnSpawnComplete += (spawnedIO) =>
+            // {
+            //     Debug.Log($"[debug] Assigning follow transform to {spawnedIO.name} for client {clientId}");
+            //     bool success = clientDisplay.AssignFollowTransform(spawnedIO, clientId);
+            //     if (!success)
+            //     {
+            //         Debug.LogError($"[debug] Failed to assign follow transform to {spawnedIO.name} for client {clientId}");
+            //     }
+            //     else
+            //     {
+            //         Debug.Log($"[debug] Successfully assigned follow transform to {spawnedIO.name} for client {clientId}");
+            //     }
+            // };
 
             interactableInstance.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
 
-            InteractableObject io = interactableInstance.GetComponent<InteractableObject>();
             io.SetParticipantOrder(po);
             POToInteractableObjects[po] = io;
 
-            ClientDisplay clientDisplay = POToClientDisplay[po];
+            yield return new WaitForSeconds(0.01f);
 
-            io.OnSpawnComplete += (spawnedIO) =>
-            {
-                clientDisplay.AssignFollowTransform(spawnedIO, clientId);
-            };
+            clientDisplay.AssignFollowTransform(io, clientId);
+
         }
 
         public void SwitchToState(IServerState newState)

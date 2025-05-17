@@ -8,14 +8,15 @@ namespace Core.SceneEntities.NetworkedComponents
 {
     public class OneScreenDisplay : ClientDisplay
     {
-        public override void AssignFollowTransform(InteractableObject _interactableObject, ulong targetClient)
+        public override bool AssignFollowTransform(InteractableObject _interactableObject, ulong targetClient)
         {
             NetworkObject netobj = _interactableObject.NetworkObject;
 
             transform.position = _interactableObject.GetCameraPositionObject().position;
             transform.rotation = _interactableObject.GetCameraPositionObject().rotation;
 
-            NetworkObject.TrySetParent(netobj, true);
+            bool success = NetworkObject.TrySetParent(netobj, true);
+            return success;
         }
 
 

@@ -6,14 +6,15 @@ namespace Core.SceneEntities.NetworkedComponents
 {
     public class ThreeScreenDisplay : ClientDisplay
     {
-        public override void AssignFollowTransform(InteractableObject MyInteractableObject, ulong targetClient)
+        public override bool AssignFollowTransform(InteractableObject MyInteractableObject, ulong targetClient)
         {
             NetworkObject netobj = MyInteractableObject.NetworkObject;
 
             transform.position = MyInteractableObject.GetCameraPositionObject().position;
             transform.rotation = MyInteractableObject.GetCameraPositionObject().rotation;
 
-            NetworkObject.TrySetParent(netobj, true);
+            bool success = NetworkObject.TrySetParent(netobj, true);
+            return success;
         }
 
         public override InteractableObject GetFollowTransform()
