@@ -1,5 +1,4 @@
-using Core.SceneEntities.NetworkedComponents;
-using Unity.Multiplayer.Center.NetcodeForGameObjectsExample;
+using Core.SceneEntities;
 using Unity.Netcode.Components;
 using UnityEditor;
 using UnityEngine;

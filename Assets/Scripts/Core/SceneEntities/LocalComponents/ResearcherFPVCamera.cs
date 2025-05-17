@@ -1,16 +1,16 @@
 using UnityEngine;
 
-namespace Core.SceneEntities.LocalComponents
+namespace Core.SceneEntities
 {
     public class FreeCameraController : MonoBehaviour
     {
         public float moveSpeed = 10f;
         public float speedMultiplier = 2f;
-    
+
         public float rotationSpeed = 5f;
         public float minPitch = -80f;
         public float maxPitch = 80f;
-    
+
         public float zoomSpeed = 10f;
         public float zoomMultiplier = 2f;
         public float minFOV = 20f;
@@ -40,7 +40,7 @@ namespace Core.SceneEntities.LocalComponents
 
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
-        
+
             Vector3 right = transform.right;
             right.y = 0f;
             right.Normalize();

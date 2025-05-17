@@ -2,7 +2,7 @@ using System;
 using Core.Networking;
 using UnityEngine;
 
-namespace Core.SceneEntities.NetworkedComponents.InteractableObject
+namespace Core.SceneEntities.NetworkedComponents
 {
     [RequireComponent(typeof(Rigidbody))]
     public class WASDController : InteractableObject
@@ -10,12 +10,12 @@ namespace Core.SceneEntities.NetworkedComponents.InteractableObject
         public Transform CameraAnchor;
         private Rigidbody rb;
 
-        public float moveSpeed = 3f;         
-        public float jumpForce = 5f;         
-        public float rotationSpeed = 150f;   
-        public float maxGroundAngle = 45f;    
+        public float moveSpeed = 3f;
+        public float jumpForce = 5f;
+        public float rotationSpeed = 150f;
+        public float maxGroundAngle = 45f;
 
-        private bool isGrounded = false; 
+        private bool isGrounded = false;
 
         public override void SetStartingPose(Pose _pose)
         {
@@ -41,11 +41,11 @@ namespace Core.SceneEntities.NetworkedComponents.InteractableObject
         {
             throw new NotImplementedException();
         }
-    
+
         private void Start()
         {
             rb = GetComponent<Rigidbody>();
-            rb.freezeRotation = true; 
+            rb.freezeRotation = true;
         }
 
         private void Update()
@@ -61,7 +61,7 @@ namespace Core.SceneEntities.NetworkedComponents.InteractableObject
         {
             CheckGroundStatus();
         }
-    
+
         private void HandleRotation()
         {
             if (Input.GetMouseButton(1))
@@ -86,7 +86,7 @@ namespace Core.SceneEntities.NetworkedComponents.InteractableObject
             if (isGrounded)
             {
                 Vector3 velocity = moveDirection * moveSpeed;
-                velocity.y = rb.linearVelocity.y;  
+                velocity.y = rb.linearVelocity.y;
                 rb.linearVelocity = velocity;
 
                 if (Input.GetKeyDown(KeyCode.Space))
@@ -107,7 +107,7 @@ namespace Core.SceneEntities.NetworkedComponents.InteractableObject
         private void CheckGroundStatus()
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, 1.1f)) 
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, 1.1f))
             {
                 float angle = Vector3.Angle(hit.normal, Vector3.up);
                 isGrounded = angle <= maxGroundAngle;

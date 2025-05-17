@@ -2,14 +2,14 @@ using UnityEditor;
 using UnityEngine;
 using Utilities;
 
-namespace Core.SceneEntities.NetworkedComponents.InteractableObject
+namespace Core.SceneEntities.NetworkedComponents
 {
     public class InteractableObjectSO : ScriptableObject
     {
         [Tooltip("Unique human readable name that will be displayed in the UI and stored in json")]
         public string ID;
         public EAuthoritativeMode AuthoritativeMode;
-        public GameObject Prefab;    
+        public GameObject Prefab;
     }
 
 #if UNITY_EDITOR
@@ -33,7 +33,7 @@ namespace Core.SceneEntities.NetworkedComponents.InteractableObject
 
             EditorGUILayout.PropertyField(objectNameProp);
             EditorGUILayout.PropertyField(authoritativeModeProp);
-        
+
             EditorGUI.BeginChangeCheck();
             var newPrefab = EditorGUILayout.ObjectField(
                 "Object Prefab",
@@ -61,7 +61,7 @@ namespace Core.SceneEntities.NetworkedComponents.InteractableObject
 
             serializedObject.ApplyModifiedProperties();
         }
-    
+
         private bool IsValidInteractableObject(GameObject go)
         {
             if (go == null) return false;

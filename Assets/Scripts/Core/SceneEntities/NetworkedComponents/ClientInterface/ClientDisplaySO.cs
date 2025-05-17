@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using Utilities;
 
-namespace Core.SceneEntities.NetworkedComponents.ClientInterface
+namespace Core.SceneEntities.NetworkedComponents
 {
     public class ClientDisplaySO : ScriptableObject
     {
@@ -25,7 +25,7 @@ namespace Core.SceneEntities.NetworkedComponents.ClientInterface
         {
             interfaceNameProp = serializedObject.FindProperty("ID");
             interfacePrefabProp = serializedObject.FindProperty("Prefab");
-            authoritativeModeProp = serializedObject.FindProperty("AuthoritativeMode"); 
+            authoritativeModeProp = serializedObject.FindProperty("AuthoritativeMode");
         }
 
         public override void OnInspectorGUI()
@@ -62,7 +62,7 @@ namespace Core.SceneEntities.NetworkedComponents.ClientInterface
 
             serializedObject.ApplyModifiedProperties();
         }
-    
+
         private bool IsValidInterface(GameObject go)
         {
             if (go == null) return false;

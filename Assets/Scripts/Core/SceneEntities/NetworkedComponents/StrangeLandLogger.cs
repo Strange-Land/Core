@@ -6,11 +6,11 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Core.Networking;
-using Core.SceneEntities.NetworkedComponents.ClientInterface;
+using Core.SceneEntities.NetworkedComponents;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core.SceneEntities.NetworkedComponents
+namespace Core.SceneEntities
 {
     public class StrangeLandLogger : MonoBehaviour
     {
@@ -415,7 +415,7 @@ namespace Core.SceneEntities.NetworkedComponents
                     parentName = cd.gameObject.name;
                     return;
                 }
-                var io = current.GetComponent<InteractableObject.InteractableObject>();
+                var io = current.GetComponent<InteractableObject>();
                 if (io != null)
                 {
                     pOrder = io.GetParticipantOrder();

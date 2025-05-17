@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Utilities;
 
-namespace Core.SceneEntities.NetworkedComponents.ClientInterface
+namespace Core.SceneEntities.NetworkedComponents
 {
     public class ClientDisplaysSO : SingletonSO<ClientDisplaysSO>
     {
