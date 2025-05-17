@@ -66,16 +66,17 @@ namespace Core.SceneEntities.NetworkedComponents
             return _participantOrder.Value;
         }
 
-        public abstract void AssignFollowTransform(InteractableObject MyInteractableObject, ulong targetClient);
+        public abstract void AssignFollowTransform(InteractableObject _interactableObject, ulong targetClient);
         public abstract InteractableObject GetFollowTransform();
 
         public virtual void De_AssignFollowTransform(NetworkObject netobj)
         {
             if (IsServer)
             {
-                NetworkObject.TryRemoveParent(false);
+                NetworkObject.TryRemoveParent(true);
                 MyInteractableObject = null;
                 De_AssignFollowTransformClientRPC();
+                Debug.Log("De_AssignFollowTransform");
             }
         }
 

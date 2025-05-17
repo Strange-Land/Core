@@ -235,7 +235,6 @@ namespace Core.Networking
                 ScenarioManager sm = GetScenarioManager();
                 Pose pose = sm.GetSpawnPose(po);
                 GameObject clientInterfaceInstance = Instantiate(GetClientDisplayPrefab(po), pose.position, pose.rotation);
-                Debug.Log($"Spawned {clientInterfaceInstance.name} for PO {po}");
 
                 clientInterfaceInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
 
@@ -301,7 +300,6 @@ namespace Core.Networking
             ScenarioManager sm = GetScenarioManager();
             Pose pose = sm.GetSpawnPose(po);
             GameObject interactableInstance = Instantiate(GetInteractableObjectPrefab(po), pose.position, pose.rotation);
-            Debug.Log($"Spawned {interactableInstance.name} for PO {po}");
 
             interactableInstance.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
 
@@ -310,6 +308,7 @@ namespace Core.Networking
             POToInteractableObjects[po] = io;
 
             ClientDisplay clientDisplay = POToClientDisplay[po];
+            yield return new WaitForSeconds(0.1f);
             clientDisplay.AssignFollowTransform(io, clientId);
         }
 
@@ -362,27 +361,6 @@ namespace Core.Networking
             return FindFirstObjectByType<ScenarioManager>();
         }
 
-        public void SwitchToLoading(string scenarioName)
-        {
-            if (StrangeLandLogger.Instance != null && StrangeLandLogger.Instance.isRecording())
-            {
-                StrangeLandLogger.Instance.StopRecording();
-            }
-
-            foreach (ParticipantOrder po in POToInteractableObjects.Keys.ToList())
-            {
-                if (POToClientDisplay.ContainsKey(po))
-                {
-                    foreach (InteractableObject io in POToInteractableObjects.Values)
-                    {
-                        POToClientDisplay[po].De_AssignFollowTransform(io.GetComponent<NetworkObject>());
-                    }
-                }
-            }
-
-            DestroyAllClientsInteractables();
-            SwitchToState(new LoadingScenario(scenarioName));
-        }
 
         private void DestroyAllClientsInteractables()
         {
@@ -404,16 +382,40 @@ namespace Core.Networking
             }
         }
 
+
+        public void SwitchToLoading(string scenarioName)
+        {
+            LoadingPrep();
+            SwitchToState(new LoadingScenario(scenarioName));
+        }
+
+
         [ContextMenu("SwitchToWaitingRoom")]
         public void BackToWaitingRoom()
+        {
+            LoadingPrep();
+            SwitchToState(new WaitingRoom());
+        }
+
+        private void LoadingPrep()
         {
             if (StrangeLandLogger.Instance != null && StrangeLandLogger.Instance.isRecording())
             {
                 StrangeLandLogger.Instance.StopRecording();
             }
 
+            foreach (ParticipantOrder po in POToInteractableObjects.Keys.ToList())
+            {
+                if (POToClientDisplay.ContainsKey(po))
+                {
+                    foreach (InteractableObject io in POToInteractableObjects.Values)
+                    {
+                        POToClientDisplay[po].De_AssignFollowTransform(io.GetComponent<NetworkObject>());
+                    }
+                }
+            }
+
             DestroyAllClientsInteractables();
-            SwitchToState(new WaitingRoom());
         }
 
         public void SwitchToInteract()
