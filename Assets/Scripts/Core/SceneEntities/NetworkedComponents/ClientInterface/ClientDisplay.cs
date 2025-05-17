@@ -73,15 +73,7 @@ namespace Core.SceneEntities.NetworkedComponents
         {
             if (IsServer)
             {
-                bool success = NetworkObject.TryRemoveParent(false);
-                if (!success)
-                {
-                    Debug.LogError("Failed to remove parent for ClientDisplay");
-                }
-                else
-                {
-                    Debug.Log("Successfully removed parent for ClientDisplay");
-                }
+                NetworkObject.TryRemoveParent(false);
                 MyInteractableObject = null;
                 De_AssignFollowTransformClientRPC();
             }
@@ -92,6 +84,7 @@ namespace Core.SceneEntities.NetworkedComponents
         public virtual void De_AssignFollowTransformClientRPC()
         {
             MyInteractableObject = null;
+            DontDestroyOnLoad(gameObject);
         }
 
         public abstract Transform GetMainCamera();

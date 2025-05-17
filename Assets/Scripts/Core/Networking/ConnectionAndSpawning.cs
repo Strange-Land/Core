@@ -362,38 +362,6 @@ namespace Core.Networking
             return FindFirstObjectByType<ScenarioManager>();
         }
 
-
-
-        [ContextMenu("SwitchToWaitingRoom")]
-        public void BackToWaitingRoom()
-        {
-            if (StrangeLandLogger.Instance != null && StrangeLandLogger.Instance.isRecording())
-            {
-                StrangeLandLogger.Instance.StopRecording();
-            }
-
-            RemoveAllClientParentRelationships();
-            DestroyAllClientsInteractables();
-            SwitchToState(new WaitingRoom());
-        }
-
-        private void RemoveAllClientParentRelationships()
-        {
-            foreach (ParticipantOrder po in POToInteractableObjects.Keys.ToList())
-            {
-                if (POToClientDisplay.ContainsKey(po))
-                {
-                    ClientDisplay clientDisplay = POToClientDisplay[po];
-                    InteractableObject interactableObject = POToInteractableObjects[po];
-
-                    if (clientDisplay != null && interactableObject != null)
-                    {
-                        clientDisplay.De_AssignFollowTransform(interactableObject.GetComponent<NetworkObject>());
-                    }
-                }
-            }
-        }
-
         public void SwitchToLoading(string scenarioName)
         {
             if (StrangeLandLogger.Instance != null && StrangeLandLogger.Instance.isRecording())
@@ -401,7 +369,17 @@ namespace Core.Networking
                 StrangeLandLogger.Instance.StopRecording();
             }
 
-            RemoveAllClientParentRelationships();
+            foreach (ParticipantOrder po in POToInteractableObjects.Keys.ToList())
+            {
+                if (POToClientDisplay.ContainsKey(po))
+                {
+                    foreach (InteractableObject io in POToInteractableObjects.Values)
+                    {
+                        POToClientDisplay[po].De_AssignFollowTransform(io.GetComponent<NetworkObject>());
+                    }
+                }
+            }
+
             DestroyAllClientsInteractables();
             SwitchToState(new LoadingScenario(scenarioName));
         }
@@ -421,17 +399,21 @@ namespace Core.Networking
         {
             if (POToInteractableObjects.ContainsKey(po))
             {
-                InteractableObject interactableObject = POToInteractableObjects[po];
-                if (interactableObject != null)
-                {
-                    NetworkObject networkObject = interactableObject.GetComponent<NetworkObject>();
-                    if (networkObject != null && networkObject.IsSpawned)
-                    {
-                        networkObject.Despawn(true);
-                    }
-                }
+                POToInteractableObjects[po].gameObject.GetComponent<NetworkObject>().Despawn(true);
                 POToInteractableObjects.Remove(po);
             }
+        }
+
+        [ContextMenu("SwitchToWaitingRoom")]
+        public void BackToWaitingRoom()
+        {
+            if (StrangeLandLogger.Instance != null && StrangeLandLogger.Instance.isRecording())
+            {
+                StrangeLandLogger.Instance.StopRecording();
+            }
+
+            DestroyAllClientsInteractables();
+            SwitchToState(new WaitingRoom());
         }
 
         public void SwitchToInteract()
