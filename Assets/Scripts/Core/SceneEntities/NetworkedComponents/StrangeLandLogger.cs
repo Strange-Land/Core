@@ -69,7 +69,7 @@ namespace Core.SceneEntities.NetworkedComponents
             {
                 if (isRecording())
                 {
-                    StartCoroutine(IEStopRecording());
+                    StopRecording();
                 }
             }
 
@@ -146,7 +146,7 @@ namespace Core.SceneEntities.NetworkedComponents
         {
             if (isRecording())
             {
-                StopRecordingSync();
+                StopRecording();
             }
         }
 
@@ -162,7 +162,7 @@ namespace Core.SceneEntities.NetworkedComponents
 
             if (RECORDING)
             {
-                StartCoroutine(IEStopRecording());
+                StopRecording();
                 return false;
             }
 
@@ -191,19 +191,22 @@ namespace Core.SceneEntities.NetworkedComponents
             recordedGameObjects.Clear();
             hasLoggedRecordingStart = false;
 
-            logItems = new List<LogItem>();
-            logItems.Add(new LogItem(null, (refobj) => Time.time.ToString(Fpres), "GameTime"));
-            logItems.Add(new LogItem(null, (refobj) => (Time.time - ScenarioStartTime).ToString(Fpres), "ScenarioTime"));
-            logItems.Add(new LogItem(null, (refobj) => Time.smoothDeltaTime.ToString(Fpres), "DeltaTime"));
-            logItems.Add(new LogItem(null, (refobj) => Time.frameCount.ToString(), "FrameCount"));
+            logItems = new List<LogItem>
+            {
+                new LogItem(null, (refobj) => Time.time.ToString(Fpres), "GameTime"),
+                new LogItem(null, (refobj) => (Time.time - ScenarioStartTime).ToString(Fpres), "ScenarioTime"),
+                new LogItem(null, (refobj) => Time.smoothDeltaTime.ToString(Fpres), "DeltaTime"),
+                new LogItem(null, (refobj) => Time.frameCount.ToString(), "FrameCount")
+            };
             StrangeLandTransform[] strangeLandObjects = FindObjectsByType<StrangeLandTransform>(sortMode: FindObjectsSortMode.None);
             foreach (var slt in strangeLandObjects)
             {
                 ParticipantOrder PO;
                 string parentName;
+                // OK so the parent name is a bit wonky to implement, for now the name of gameobject should be sufficient
                 FindClosestParentDisplayOrInteractable(slt.transform, out PO, out parentName);
                 string finalNameForLog = !string.IsNullOrEmpty(slt.OverrideName) ? slt.OverrideName : slt.gameObject.name;
-                string labelPrefix = PO.ToString() + "_" + parentName + "_" + finalNameForLog;
+                string labelPrefix = PO.ToString() + "_" + finalNameForLog;
 
                 // Record the GameObject for logging
                 recordedGameObjects.Add(slt.gameObject.name);
@@ -237,16 +240,12 @@ namespace Core.SceneEntities.NetworkedComponents
         [ContextMenu("StopRecording")]
         public void StopRecording()
         {
-            if (isRecording())
-                StartCoroutine(IEStopRecording());
-        }
-
-        private void StopRecordingSync()
-        {
             if (!isRecording()) return;
 
+            // Stop the data sending thread
             isSending = false;
 
+            // Flush any remaining data in the buffer
             string data;
             while (databuffer.TryDequeue(out data))
             {
@@ -266,31 +265,12 @@ namespace Core.SceneEntities.NetworkedComponents
             // Close the stream and log
             RECORDING = false;
             CloseLogs();
-            LogRecordedObjects(false);
-            Debug.Log($"Stopped Recording. File saved to: {path}");
-        }
-
-        public IEnumerator IEStopRecording()
-        {
-            if (!isRecording()) yield break;
-
-            isSending = false;
-            Debug.Log("Stopping Recording...");
-
-            // Ensure we flush any remaining data
-            FlushLogStream();
-
-            yield return new WaitUntil(() => doneSending);
-
-            RECORDING = false;
-            CloseLogs();
 
             if (NetworkManager.Singleton.IsServer)
             {
                 LogRecordedObjects(false);
             }
-
-            Debug.Log($"Stopped Recording. File saved to: {path}");
+            doneSending = true;
         }
 
         private void LogRecordedObjects(bool isStart)
@@ -384,6 +364,8 @@ namespace Core.SceneEntities.NetworkedComponents
 
         private string PositionLog(GameObject o)
         {
+            if (o == null) return string.Empty;
+
             Transform t = o.transform;
             Vector3 pos = t.position;
             byte[] buffer = new byte[3 * 4];
@@ -395,6 +377,8 @@ namespace Core.SceneEntities.NetworkedComponents
 
         private string OrientationLog(GameObject o)
         {
+            if (o == null) return string.Empty;
+
             Transform t = o.transform;
             Vector3 euler = t.rotation.eulerAngles;
             byte[] buffer = new byte[3 * 4];
@@ -406,6 +390,8 @@ namespace Core.SceneEntities.NetworkedComponents
 
         private string ScaleLog(GameObject o)
         {
+            if (o == null) return string.Empty;
+
             Transform t = o.transform;
             Vector3 scale = t.lossyScale;
             byte[] buffer = new byte[3 * 4];

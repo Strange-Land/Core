@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Core.Scenario;
+using Core.SceneEntities.NetworkedComponents;
 using Core.SceneEntities.NetworkedComponents.ClientInterface;
 using Core.SceneEntities.NetworkedComponents.InteractableObject;
 using Newtonsoft.Json;
@@ -364,6 +365,11 @@ namespace Core.Networking
 
         public void SwitchToLoading(string scenarioName)
         {
+            if (StrangeLandLogger.Instance != null && StrangeLandLogger.Instance.isRecording())
+            {
+                StrangeLandLogger.Instance.StopRecording();
+            }
+
             foreach (ParticipantOrder po in POToInteractableObjects.Keys.ToList())
             {
                 if (POToClientDisplay.ContainsKey(po))
@@ -402,6 +408,11 @@ namespace Core.Networking
         [ContextMenu("SwitchToWaitingRoom")]
         public void BackToWaitingRoom()
         {
+            if (StrangeLandLogger.Instance != null && StrangeLandLogger.Instance.isRecording())
+            {
+                StrangeLandLogger.Instance.StopRecording();
+            }
+
             DestroyAllClientsInteractables();
             SwitchToState(new WaitingRoom());
         }
