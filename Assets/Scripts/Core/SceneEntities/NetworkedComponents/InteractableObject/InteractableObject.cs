@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Core.Networking;
 using Unity.Netcode;
@@ -7,6 +8,7 @@ namespace Core.SceneEntities.NetworkedComponents
 {
     public abstract class InteractableObject : NetworkBehaviour
     {
+        public event Action<InteractableObject> OnSpawnComplete;
 
         public NetworkVariable<ParticipantOrder> _participantOrder = new NetworkVariable<ParticipantOrder>();
 
@@ -15,6 +17,12 @@ namespace Core.SceneEntities.NetworkedComponents
         private void Awake()
         {
             instances.Add(this);
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+            OnSpawnComplete?.Invoke(this);
         }
 
         public override void OnDestroy()

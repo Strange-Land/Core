@@ -308,8 +308,11 @@ namespace Core.Networking
             POToInteractableObjects[po] = io;
 
             ClientDisplay clientDisplay = POToClientDisplay[po];
-            yield return new WaitForSeconds(0.1f);
-            clientDisplay.AssignFollowTransform(io, clientId);
+
+            io.OnSpawnComplete += (spawnedIO) =>
+            {
+                clientDisplay.AssignFollowTransform(spawnedIO, clientId);
+            };
         }
 
         public void SwitchToState(IServerState newState)
