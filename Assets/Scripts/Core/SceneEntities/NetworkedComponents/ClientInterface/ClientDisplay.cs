@@ -84,7 +84,6 @@ namespace Core.SceneEntities.NetworkedComponents
         public virtual void De_AssignFollowTransformClientRPC()
         {
             MyInteractableObject = null;
-            DontDestroyOnLoad(gameObject);
         }
 
         public abstract Transform GetMainCamera();
