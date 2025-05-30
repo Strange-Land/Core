@@ -6,19 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GameManagement.unity
+    path: Assets/Core/Scenes/GameManagement.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/WaitingRoom.unity
+    path: Assets/Core/Scenes/WaitingRoom.unity
     guid: 9e3acfda9278e224b9ba91d51c6ce730
   - enabled: 1
-    path: Assets/Scenes/ScenarioDemo_Plain.unity
+    path: Assets/Core/Scenes/ScenarioDemo_Plain.unity
     guid: 94efa062ec163de4e99773a164aa0670
   - enabled: 1
-    path: Assets/Scenes/ScenarioDemo_Placeholder.unity
+    path: Assets/Core/Scenes/ScenarioDemo_Placeholder.unity
     guid: 61a337cb6fa5f884d8fbc37e977604a2
   - enabled: 1
-    path: Assets/Scenes/VisualDemo_Plain.unity
+    path: Assets/Core/Scenes/VisualDemo_Plain.unity
     guid: b4eac181d4fe4db4ca1ef0740f8d6d96
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
