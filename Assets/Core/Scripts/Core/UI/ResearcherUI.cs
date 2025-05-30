@@ -3,18 +3,18 @@ using Core.Networking;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Utilities.SceneField;
+using Core.Utilities;
 
 namespace Core.UI
 {
     public class ResearcherUI : MonoBehaviour
     {
         public GameObject SceneButtonPrefab;
-        
+
         public Transform SceneButtonParent;
 
         public TMP_Text ServerState;
-        
+
         private void Start()
         {
             List<SceneField> scenes = ConnectionAndSpawning.Instance.ScenarioScenes;
@@ -37,13 +37,13 @@ namespace Core.UI
         {
             ConnectionAndSpawning.Instance.SwitchToLoading(scenarioName);
         }
-        
+
         [ContextMenu("SwitchToInteract")]
         public void SwitchToInteract()
         {
             ConnectionAndSpawning.Instance.SwitchToInteract();
         }
-        
+
         public void SwitchToWaiting()
         {
             ConnectionAndSpawning.Instance.BackToWaitingRoom();

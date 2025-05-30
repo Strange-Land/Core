@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Utilities
+namespace Core.Utilities
 {
     public abstract class SingletonSO<T> : ScriptableObject where T : ScriptableObject
     {
@@ -14,7 +14,7 @@ namespace Utilities
                 {
                     instance = Resources.Load<T>(typeof(T).Name);
 
-                    if (instance ==null)
+                    if (instance == null)
                     {
                         Debug.LogError($"SingletonSO<{typeof(T).Name}> not found in Resources folder!!!");
                     }
@@ -22,7 +22,7 @@ namespace Utilities
                 return instance;
             }
         }
-    
+
         protected virtual void OnDisable()
         {
             instance = null;

@@ -1,8 +1,7 @@
 using UnityEditor;
 using UnityEngine;
-using Utilities;
 
-namespace Core.SceneEntities.NetworkedComponents
+namespace Core.SceneEntities
 {
     public class InteractableObjectSO : ScriptableObject
     {

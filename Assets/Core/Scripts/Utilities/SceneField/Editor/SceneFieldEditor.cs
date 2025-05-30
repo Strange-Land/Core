@@ -21,24 +21,24 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Utilities.SceneField.Editor
+namespace Core.Utilities
 {
     [CustomPropertyDrawer(typeof(SceneField))]
     public class SceneFieldEditor : PropertyDrawer
     {
         // Scene in build data:
-        const float sceneInBuildSeparationLeft  = 1;
+        const float sceneInBuildSeparationLeft = 1;
         const float sceneInBuildSeparationRight = 10;
         const float sceneInBuildSeparationTotal = sceneInBuildSeparationLeft + sceneInBuildSeparationRight;
 
-        GUIContent sceneInBuildYesContent        = new GUIContent("In build");
-        GUIContent sceneInBuildNoContent         = new GUIContent("Not in build");
+        GUIContent sceneInBuildYesContent = new GUIContent("In build");
+        GUIContent sceneInBuildNoContent = new GUIContent("Not in build");
         GUIContent sceneInBuildUnassignedContent = new GUIContent("Unassigned");
-        GUIContent sceneInBuildMultipleContent   = new GUIContent("—");
+        GUIContent sceneInBuildMultipleContent = new GUIContent("—");
 
         GUIStyle _sceneInBuildStyle;
         GUIStyle SceneInBuildStyle => _sceneInBuildStyle ?? (_sceneInBuildStyle = new GUIStyle(EditorStyles.miniLabel));
-        
+
         float _buildIndexWidth;
         float BuildIndexWidth
         {
@@ -46,7 +46,7 @@ namespace Utilities.SceneField.Editor
             {
                 if (_buildIndexWidth == 0)
                     SceneInBuildStyle.CalcMinMaxWidth(sceneInBuildNoContent, out _buildIndexWidth, out _);
-                
+
                 return _buildIndexWidth;
             }
         }
@@ -54,10 +54,10 @@ namespace Utilities.SceneField.Editor
 
         // Scene is required data:
         GUIContent sceneIsRequiredContent = new GUIContent("Required", "Logs an error and fails the build if the scene is not added to builds");
-        
+
         GUIStyle _sceneIsRequiredStyleNormal;
         GUIStyle SceneIsRequiredStyleNormal => _sceneIsRequiredStyleNormal ?? (_sceneIsRequiredStyleNormal = new GUIStyle(EditorStyles.miniLabel));
-        
+
         GUIStyle _sceneIsRequiredStylePrefabOverride;
         GUIStyle SceneIsRequiredStylePrefabOverride => _sceneIsRequiredStylePrefabOverride ?? (_sceneIsRequiredStylePrefabOverride = new GUIStyle(EditorStyles.miniBoldLabel));
 
@@ -70,7 +70,7 @@ namespace Utilities.SceneField.Editor
                 {
                     SceneIsRequiredStylePrefabOverride.CalcMinMaxWidth(sceneIsRequiredContent, out float min, out _);
                     _sceneIsRequiredWidth = min;
-                    
+
                     EditorStyles.toggle.CalcMinMaxWidth(GUIContent.none, out min, out _);
                     _sceneIsRequiredWidth += min;
                 }
@@ -94,14 +94,14 @@ namespace Utilities.SceneField.Editor
         {
             SerializedProperty sceneAssetProp = property.FindPropertyRelative("sceneAsset");
             SerializedProperty buildIndexProp = property.FindPropertyRelative("buildIndex");
-            SerializedProperty requiredProp   = property.FindPropertyRelative("required");
+            SerializedProperty requiredProp = property.FindPropertyRelative("required");
 
             position.height = EditorGUIUtility.singleLineHeight;
-            
-            
+
+
             // Scene asset:
             position.width -= BuildIndexWidth + sceneInBuildSeparationTotal + SceneIsRequiredWidth;
-            
+
             using (new EditorGUI.PropertyScope(position, label, sceneAssetProp))
             {
                 EditorGUI.PropertyField(position, sceneAssetProp, label);
@@ -119,11 +119,11 @@ namespace Utilities.SceneField.Editor
             else if (sceneAssetProp.objectReferenceValue != null)
             {
                 bool isInBuilds = buildIndexProp.intValue >= 0;
-                
+
                 Color prevColor = GUI.contentColor;
-                if (!isInBuilds  &&  requiredProp.boolValue)
+                if (!isInBuilds && requiredProp.boolValue)
                     GUI.contentColor *= Color.red;
-            
+
                 GUI.Label(position, isInBuilds ? sceneInBuildYesContent : sceneInBuildNoContent, SceneInBuildStyle);
 
                 GUI.contentColor = prevColor;
@@ -146,9 +146,9 @@ namespace Utilities.SceneField.Editor
             using (var changeCheck = new EditorGUI.ChangeCheckScope())
             {
                 EditorGUI.showMixedValue = requiredProp.hasMultipleDifferentValues;
-                bool newValue = EditorGUI.ToggleLeft(position, sceneIsRequiredContent, requiredProp.boolValue, requiredProp.prefabOverride && !requiredProp.hasMultipleDifferentValues  ?  SceneIsRequiredStylePrefabOverride  :  SceneIsRequiredStyleNormal);
+                bool newValue = EditorGUI.ToggleLeft(position, sceneIsRequiredContent, requiredProp.boolValue, requiredProp.prefabOverride && !requiredProp.hasMultipleDifferentValues ? SceneIsRequiredStylePrefabOverride : SceneIsRequiredStyleNormal);
                 EditorGUI.showMixedValue = false;
-                
+
                 if (changeCheck.changed)
                     requiredProp.boolValue = newValue;
             }

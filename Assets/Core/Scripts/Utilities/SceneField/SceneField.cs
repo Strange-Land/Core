@@ -28,7 +28,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Utilities.SceneField
+namespace Core.Utilities
 {
     /// <summary>
     /// Makes it possible to assign a scene asset in the inspector and load the scene data in a build.

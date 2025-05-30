@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Utilities;
+using Core.Utilities;
 
-namespace Core.SceneEntities.NetworkedComponents
+namespace Core.SceneEntities
 {
     public class InteractableObjectsSO : SingletonSO<InteractableObjectsSO>
     {

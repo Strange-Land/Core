@@ -1,10 +1,10 @@
 using UnityEngine;
 
-namespace Utilities
+namespace Core.Utilities
 {
     public static class Utils
     {
-        public static void  DisableComponentsInChildren<T>(GameObject gameObject) where T : Component
+        public static void DisableComponentsInChildren<T>(GameObject gameObject) where T : Component
         {
             T[] components = gameObject.GetComponentsInChildren<T>();
             foreach (T component in components)
@@ -13,6 +13,6 @@ namespace Utilities
             }
 
         }
-    
+
     }
 }

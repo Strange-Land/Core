@@ -10,7 +10,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Utilities.SceneField;
+using Core.Utilities;
 
 /* note, feel free to remove
 Default -> Waiting Room: ServerStarted

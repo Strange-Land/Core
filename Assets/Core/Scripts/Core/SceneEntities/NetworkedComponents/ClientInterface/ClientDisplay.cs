@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Core.SceneEntities.NetworkedComponents
+namespace Core.SceneEntities
 {
     public abstract class ClientDisplay : NetworkBehaviour
     {

@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace Core.SceneEntities.NetworkedComponents
+namespace Core.SceneEntities
 {
     public class ThreeScreenDisplay : ClientDisplay
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Networking;
-using Core.SceneEntities.NetworkedComponents;
+using Core.SceneEntities;
 using UnityEngine;
 
 namespace Core.UI

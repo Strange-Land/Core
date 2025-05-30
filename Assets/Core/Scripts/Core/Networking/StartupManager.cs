@@ -60,7 +60,7 @@ namespace Core.Networking
             }
             else
             {
-                Debug.LogError("Play mode tag not supported");
+                Debug.LogError("Play mode tag not supported! Please go to the multiplayer center and add the tags");
             }
         }
 

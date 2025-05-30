@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using Utilities;
+using Core.Networking;
 
-namespace Core.SceneEntities.NetworkedComponents
+namespace Core.SceneEntities
 {
     public class ClientDisplaySO : ScriptableObject
     {
