@@ -2,8 +2,7 @@ using Core.SceneEntities;
 using Unity.Netcode.Components;
 using UnityEditor;
 using UnityEngine;
-using Utilities;
-using ClientNetworkTransform = Utilities.ClientNetworkTransform;
+using Core.Utilities;
 
 namespace Core.Editor
 {
