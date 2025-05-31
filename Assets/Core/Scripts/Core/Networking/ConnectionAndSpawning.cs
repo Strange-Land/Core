@@ -228,7 +228,10 @@ namespace Core.Networking
 
             if (po == ParticipantOrder.Researcher)
             {
-                SpawnResearcherCamera(clientId);
+                if (!NetworkManager.Singleton.IsHost || clientId != NetworkManager.Singleton.LocalClientId)
+                {
+                    SpawnResearcherCamera(clientId);
+                }
             }
             else
             {
