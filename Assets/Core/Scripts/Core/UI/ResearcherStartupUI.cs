@@ -80,6 +80,7 @@ namespace Core.UI
 
         public void StartHost()
         {
+            _clientConfigSpawner.UpdateClientOptionsFromUI();
             ConnectionAndSpawning.Instance.StartAsHost(_hostPO);
         }
 
