@@ -19,7 +19,7 @@ Loading Scenario -> Loading Visuals: SceneEvent_Server (base scene load complete
 Loading Visuals -> Ready: SceneEvent_Server (visual scene load completed)
 Ready -> Interact: SwitchToDriving that triggers from UI
 Interact -> QN: (Optional?) SwitchToQuestionnaire that triggers from UI
-AnyState -> Waiting Room: trigger from UI   
+AnyState -> Waiting Room: trigger from UI
 */
 
 namespace Core.Networking
@@ -113,6 +113,11 @@ namespace Core.Networking
 
         public void StartAsHost(ParticipantOrder po)
         {
+            NetworkManager.Singleton.OnServerStarted += ServerStarted;
+            NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
+            NetworkManager.Singleton.OnClientConnectedCallback += ClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += ClientDisconnected;
+
             JoinParameters joinParams = new JoinParameters()
             {
                 PO = po
@@ -168,6 +173,7 @@ namespace Core.Networking
             }
 
             Participants.RemoveParticipant(clientId);
+            Debug.Log($"Client {clientId} (PO: {po}) disconnected. Cleaned up associated objects.");
         }
 
         private void SceneEvent_Server(SceneEvent sceneEvent)
@@ -178,27 +184,77 @@ namespace Core.Networking
                     LoadEventCompleted(sceneEvent);
                     break;
                 case SceneEventType.LoadComplete:
-                    if (sceneEvent.ClientId == 0)
+                    if (sceneEvent.ClientId == NetworkManager.ServerClientId)
                     {
-                        return;
-                    }
-
-                    if (sceneEvent.LoadSceneMode == LoadSceneMode.Additive && GetScenarioManager().HasVisualScene() ||
-                        (sceneEvent.LoadSceneMode == LoadSceneMode.Single && !GetScenarioManager().HasVisualScene()))
-                    {
-                        ParticipantOrder po = Participants.GetPO(sceneEvent.ClientId);
-                        if (po != ParticipantOrder.Researcher)
+                        ScenarioManager sm = GetScenarioManager();
+                        if (sm == null || !sm.IsInitialized)
                         {
-                            SpawnInteractableObject(sceneEvent.ClientId);
+                            // Debug.LogWarning($"ScenarioManager not ready when server completed scene load: {sceneEvent.SceneName}. Waiting for it to initialize.");
+                            StartCoroutine(WaitForScenarioManagerAndThenSpawn(sceneEvent));
+                            return;
+                        }
+
+                        if (sceneEvent.LoadSceneMode == LoadSceneMode.Additive && sm.HasVisualScene() ||
+                           (sceneEvent.LoadSceneMode == LoadSceneMode.Single && !sm.HasVisualScene()))
+                        {
+                            foreach (var connectedClientId in NetworkManager.Singleton.ConnectedClientsIds)
+                            {
+                                if (sceneEvent.ClientId == connectedClientId)
+                                {
+                                    ParticipantOrder po = Participants.GetPO(connectedClientId);
+                                    if (po != ParticipantOrder.Researcher && !POToInteractableObjects.ContainsKey(po))
+                                    {
+                                        StartCoroutine(EnsureClientDisplayAndSpawnInteractable(connectedClientId, po));
+                                    }
+                                }
+                            }
                         }
                     }
                     break;
             }
         }
 
+
+        private IEnumerator EnsureClientDisplayAndSpawnInteractable(ulong clientId, ParticipantOrder po)
+        {
+            yield return new WaitUntil(() => POToClientDisplay.ContainsKey(po) && POToClientDisplay[po] != null);
+            SpawnInteractableObject(clientId);
+        }
+
+
+        private IEnumerator WaitForScenarioManagerAndThenSpawn(SceneEvent sceneEvent)
+        {
+            ScenarioManager sm = GetScenarioManager();
+            while (sm == null || !sm.IsInitialized)
+            {
+                Debug.Log($"Waiting for ScenarioManager to initialize for scene: {sceneEvent.SceneName}...");
+                yield return null;
+                sm = GetScenarioManager();
+            }
+            Debug.Log($"ScenarioManager is now initialized for scene: {sceneEvent.SceneName}. Proceeding with LoadComplete logic.");
+
+            if (sceneEvent.LoadSceneMode == LoadSceneMode.Additive && sm.HasVisualScene() ||
+                (sceneEvent.LoadSceneMode == LoadSceneMode.Single && !sm.HasVisualScene()))
+            {
+                foreach (var connectedClientId in NetworkManager.Singleton.ConnectedClientsIds)
+                {
+                    if (sceneEvent.ClientId == connectedClientId)
+                    {
+                        ParticipantOrder po = Participants.GetPO(connectedClientId);
+                        if (po != ParticipantOrder.Researcher && !POToInteractableObjects.ContainsKey(po))
+                        {
+                            StartCoroutine(EnsureClientDisplayAndSpawnInteractable(connectedClientId, po));
+                        }
+                    }
+                }
+            }
+        }
+
+
         private void LoadEventCompleted(SceneEvent sceneEvent)
         {
-            Debug.Log($"Scene load completed: {sceneEvent.SceneName}, current state: {_currentState}");
+            // This event signifies that ALL clients (including server) have finished a Load or Unload operation.
+            Debug.Log($"SceneEvent_Server: LoadEventCompleted for scene {sceneEvent.SceneName} and type {sceneEvent.SceneEventType}. Current state: {_currentState?.GetType().Name}");
 
             switch (_currentState)
             {
@@ -222,32 +278,63 @@ namespace Core.Networking
 
         private IEnumerator IEClientConnectedInternal(ulong clientId)
         {
-            yield return new WaitForEndOfFrame();
+            // Wait a frame to ensure scene loading has progressed
+            yield return null;
+
+            ScenarioManager sm = GetScenarioManager();
+            while (sm == null)
+            {
+                yield return null;
+                sm = GetScenarioManager();
+            }
+
+            while (!sm.IsInitialized)
+            {
+                yield return null;
+            }
+            Debug.Log($"ConnectionAndSpawning.IEClientConnectedInternal: ScenarioManager found and initialized for client {clientId}.");
+
 
             ParticipantOrder po = Participants.GetPO(clientId);
 
             if (po == ParticipantOrder.Researcher)
             {
-                if (!NetworkManager.Singleton.IsHost || clientId != NetworkManager.Singleton.LocalClientId)
-                {
-                    SpawnResearcherCamera(clientId);
-                }
+                SpawnResearcherCamera(clientId);
             }
             else
             {
-                ScenarioManager sm = GetScenarioManager();
                 Pose pose = sm.GetSpawnPose(po);
-                GameObject clientInterfaceInstance = Instantiate(GetClientDisplayPrefab(po), pose.position, pose.rotation);
+                GameObject clientDisplayPrefab = GetClientDisplayPrefab(po);
+                if (clientDisplayPrefab == null)
+                {
+                    Debug.LogError($"Client Display Prefab is null for PO: {po}. Cannot spawn ClientDisplay.");
+                    yield break;
+                }
 
-                clientInterfaceInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+                GameObject clientInterfaceInstance = Instantiate(clientDisplayPrefab, pose.position, pose.rotation);
+                NetworkObject netObj = clientInterfaceInstance.GetComponent<NetworkObject>();
+                if (netObj == null)
+                {
+                    Debug.LogError($"ClientDisplay Prefab {clientDisplayPrefab.name} for PO: {po} is missing a NetworkObject component.");
+                    Destroy(clientInterfaceInstance);
+                    yield break;
+                }
+
+                netObj.SpawnAsPlayerObject(clientId);
 
                 ClientDisplay ci = clientInterfaceInstance.GetComponent<ClientDisplay>();
-                POToClientDisplay.Add(po, ci);
+                if (ci == null)
+                {
+                    Debug.LogError($"ClientDisplay Prefab {clientDisplayPrefab.name} for PO: {po} is missing a ClientDisplay component.");
+                    if (netObj.IsSpawned) netObj.Despawn(true); else Destroy(clientInterfaceInstance);
+                    yield break;
+                }
+                POToClientDisplay[po] = ci;
                 ci.SetParticipantOrder(po);
+                Debug.Log($"Spawned ClientDisplay for PO: {po} with ClientId: {clientId}");
             }
         }
 
-        // for now researcher camera is just a local instance on the client, not networked
         private void SpawnResearcherCamera(ulong clientId)
         {
             if (_researcherCameraPrefab == null)
@@ -256,16 +343,16 @@ namespace Core.Networking
                 return;
             }
 
-            Vector3 spawnPosition = Vector3.zero;
-            Quaternion spawnRotation = Quaternion.identity;
-
             ScenarioManager sm = GetScenarioManager();
-            if (sm != null)
+            if (sm == null || !sm.IsInitialized)
             {
-                Pose researcherPose = sm.GetSpawnPose(ParticipantOrder.Researcher);
-                spawnPosition = researcherPose.position;
-                spawnRotation = researcherPose.rotation;
+                Debug.LogError($"Cannot spawn researcher camera: ScenarioManager not ready for client {clientId}. This should not happen.");
+                return;
             }
+
+            Pose researcherPose = sm.GetSpawnPose(ParticipantOrder.Researcher);
+            Vector3 spawnPosition = researcherPose.position;
+            Quaternion spawnRotation = researcherPose.rotation;
 
             SpawnResearcherCameraClientRpc(spawnPosition, spawnRotation, new ClientRpcParams
             {
@@ -274,6 +361,7 @@ namespace Core.Networking
                     TargetClientIds = new ulong[] { clientId }
                 }
             });
+            Debug.Log($"Requested researcher camera spawn for client {clientId}");
         }
 
         [ClientRpc]
@@ -281,12 +369,18 @@ namespace Core.Networking
         {
             if (_researcherCameraPrefab == null)
             {
-                Debug.LogError("ResearcherCameraPrefab is not assigned!");
+                Debug.LogError($"ResearcherCameraPrefab is null on client {NetworkManager.Singleton.LocalClientId}. Cannot spawn.");
                 return;
             }
 
+            if (GameObject.FindFirstObjectByType<FreeCameraController>() != null && NetworkManager.Singleton.LocalClientId == clientRpcParams.Send.TargetClientIds[0])
+            {
+                Debug.LogWarning($"Researcher camera already exists for client {NetworkManager.Singleton.LocalClientId}. Skipping spawn.");
+                return;
+            }
+
+
             GameObject researcherCameraInstance = Instantiate(_researcherCameraPrefab, spawnPosition, spawnRotation);
-            DontDestroyOnLoad(researcherCameraInstance);
             Debug.Log($"Spawned researcher camera locally on client {NetworkManager.Singleton.LocalClientId}");
         }
 
@@ -298,36 +392,59 @@ namespace Core.Networking
         private IEnumerator IESpawnInteractableObject(ulong clientId)
         {
             ParticipantOrder po = Participants.GetPO(clientId);
-            yield return new WaitUntil(() => POToClientDisplay.ContainsKey(po));
+
+            yield return new WaitUntil(() => POToClientDisplay.ContainsKey(po) && POToClientDisplay[po] != null);
 
             ScenarioManager sm = GetScenarioManager();
+            if (sm == null || !sm.IsInitialized)
+            {
+                Debug.LogError($"Cannot spawn interactable object for PO {po} (Client {clientId}): ScenarioManager not ready. This should ideally be caught earlier.");
+                yield break;
+            }
+
             Pose pose = sm.GetSpawnPose(po);
-            GameObject interactableInstance = Instantiate(GetInteractableObjectPrefab(po), pose.position, pose.rotation);
+            GameObject interactablePrefab = GetInteractableObjectPrefab(po);
+            if (interactablePrefab == null)
+            {
+                Debug.LogError($"Interactable Object Prefab is null for PO: {po}. Cannot spawn.");
+                yield break;
+            }
+
+            GameObject interactableInstance = Instantiate(interactablePrefab, pose.position, pose.rotation);
+            NetworkObject netObj = interactableInstance.GetComponent<NetworkObject>();
+            if (netObj == null)
+            {
+                Debug.LogError($"InteractableObject Prefab {interactablePrefab.name} for PO: {po} is missing a NetworkObject component.");
+                Destroy(interactableInstance);
+                yield break;
+            }
+
+
             InteractableObject io = interactableInstance.GetComponent<InteractableObject>();
-            ClientDisplay clientDisplay = POToClientDisplay[po];
-            // io.OnSpawnComplete += (spawnedIO) =>
-            // {
-            //     Debug.Log($"[debug] Assigning follow transform to {spawnedIO.name} for client {clientId}");
-            //     bool success = clientDisplay.AssignFollowTransform(spawnedIO, clientId);
-            //     if (!success)
-            //     {
-            //         Debug.LogError($"[debug] Failed to assign follow transform to {spawnedIO.name} for client {clientId}");
-            //     }
-            //     else
-            //     {
-            //         Debug.Log($"[debug] Successfully assigned follow transform to {spawnedIO.name} for client {clientId}");
-            //     }
-            // };
+            if (io == null)
+            {
+                Debug.LogError($"InteractableObject Prefab {interactablePrefab.name} for PO: {po} is missing an InteractableObject component.");
+                Destroy(interactableInstance);
+                yield break;
+            }
 
-            interactableInstance.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
-
+            netObj.SpawnWithOwnership(clientId);
             io.SetParticipantOrder(po);
             POToInteractableObjects[po] = io;
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
-            clientDisplay.AssignFollowTransform(io, clientId);
-
+            ClientDisplay clientDisplay = POToClientDisplay[po];
+            if (clientDisplay != null && clientDisplay.NetworkObject.IsSpawned && io.NetworkObject.IsSpawned)
+            {
+                bool success = clientDisplay.AssignFollowTransform(io, clientId);
+                if (!success) Debug.LogError($"Failed to assign follow transform for PO {po} to {io.name}.");
+                else Debug.Log($"Assigned follow transform for PO {po} to {io.name}");
+            }
+            else
+            {
+                Debug.LogError($"Cannot assign follow transform for PO {po}: ClientDisplay or InteractableObject not ready/spawned.");
+            }
         }
 
         public void SwitchToState(IServerState newState)
@@ -348,29 +465,71 @@ namespace Core.Networking
 
         private void SpawnResearcherPrefabs()
         {
-            Debug.Log("Spawning researcher prefabs");
+            Debug.Log("Spawning researcher prefabs (server-side or common)");
 
             foreach (GameObject prefab in _researcherPrefabs)
             {
-                Instantiate(prefab);
+                if (prefab == null)
+                {
+                    Debug.LogWarning("A prefab in _researcherPrefabs list is null. Skipping.");
+                    continue;
+                }
+                GameObject instance = Instantiate(prefab);
+                NetworkObject netObj = instance.GetComponent<NetworkObject>();
+                if (netObj != null)
+                {
+                    if (!netObj.IsSpawned) netObj.Spawn(true);
+                    Debug.Log($"Spawned researcher NetworkObject prefab: {prefab.name}");
+                }
+                else
+                {
+                    Debug.Log($"Instantiated local researcher prefab: {prefab.name}");
+                }
             }
         }
 
         private GameObject GetClientDisplayPrefab(ParticipantOrder po)
         {
             ClientOption option = ClientOptions.Instance.GetOption(po);
-            return ClientDisplaysSO.Instance.ClientDisplays[option.ClientDisplay].Prefab;
+            if (ClientDisplaysSO.Instance == null || option.ClientDisplay < 0 || option.ClientDisplay >= ClientDisplaysSO.Instance.ClientDisplays.Count)
+            {
+                Debug.LogError($"Invalid ClientDisplay option for PO: {po}. Index: {option.ClientDisplay}");
+                return null;
+            }
+            var displaySO = ClientDisplaysSO.Instance.ClientDisplays[option.ClientDisplay];
+            if (displaySO == null)
+            {
+                Debug.LogError($"ClientDisplaySO is null for PO: {po} at index {option.ClientDisplay}");
+                return null;
+            }
+            return displaySO.Prefab;
         }
 
         private GameObject GetInteractableObjectPrefab(ParticipantOrder po)
         {
             ClientOption option = ClientOptions.Instance.GetOption(po);
-            return InteractableObjectsSO.Instance.InteractableObjects[option.InteractableObject].Prefab;
+            if (InteractableObjectsSO.Instance == null || option.InteractableObject < 0 || option.InteractableObject >= InteractableObjectsSO.Instance.InteractableObjects.Count)
+            {
+                Debug.LogError($"Invalid InteractableObject option for PO: {po}. Index: {option.InteractableObject}");
+                return null;
+            }
+            var interactableSO = InteractableObjectsSO.Instance.InteractableObjects[option.InteractableObject];
+            if (interactableSO == null)
+            {
+                Debug.LogError($"InteractableObjectSO is null for PO: {po} at index {option.InteractableObject}");
+                return null;
+            }
+            return interactableSO.Prefab;
         }
 
         public void ServerLoadScene(string sceneName, LoadSceneMode mode)
         {
-            Debug.Log($"ServerLoadingScene: {sceneName}");
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                Debug.LogError("ServerLoadScene: sceneName is null or empty!");
+                return;
+            }
+            Debug.Log($"ServerLoadingScene: {sceneName} with mode {mode}");
             NetworkManager.Singleton.SceneManager.LoadScene(sceneName, mode);
         }
 
@@ -382,21 +541,33 @@ namespace Core.Networking
 
         private void DestroyAllClientsInteractables()
         {
-            foreach (var po in Participants.GetAllConnectedPOs())
+            List<ParticipantOrder> posToProcess = new List<ParticipantOrder>(POToInteractableObjects.Keys);
+
+            foreach (var po in posToProcess)
             {
                 if (po != ParticipantOrder.Researcher)
                 {
-                    DestroyAllInteractableObjects(po);
+                    DestroyInteractableObjectForPO(po);
                 }
             }
+            POToInteractableObjects.Clear();
         }
 
-        private void DestroyAllInteractableObjects(ParticipantOrder po)
+        private void DestroyInteractableObjectForPO(ParticipantOrder po)
         {
-            if (POToInteractableObjects.ContainsKey(po))
+            if (POToInteractableObjects.TryGetValue(po, out InteractableObject io) && io != null)
             {
-                POToInteractableObjects[po].gameObject.GetComponent<NetworkObject>().Despawn(true);
-                POToInteractableObjects.Remove(po);
+                NetworkObject netObj = io.GetComponent<NetworkObject>();
+                if (netObj != null && netObj.IsSpawned)
+                {
+                    netObj.Despawn(true);
+                    Debug.Log($"Despawned InteractableObject for PO: {po}");
+                }
+                else if (netObj == null)
+                {
+                    Destroy(io.gameObject);
+                    Debug.LogWarning($"Destroyed InteractableObject (no NetworkObject) for PO: {po}");
+                }
             }
         }
 
@@ -422,17 +593,20 @@ namespace Core.Networking
                 StrangeLandLogger.Instance.StopRecording();
             }
 
-            foreach (ParticipantOrder po in POToInteractableObjects.Keys.ToList())
+            foreach (ParticipantOrder po in POToClientDisplay.Keys.ToList())
             {
-                if (POToClientDisplay.ContainsKey(po))
+                if (POToClientDisplay.TryGetValue(po, out ClientDisplay cd) && cd != null)
                 {
-                    foreach (InteractableObject io in POToInteractableObjects.Values)
+                    if (POToInteractableObjects.TryGetValue(po, out InteractableObject io) && io != null)
                     {
-                        POToClientDisplay[po].De_AssignFollowTransform(io.GetComponent<NetworkObject>());
+                        if (cd.NetworkObject != null && io.NetworkObject != null)
+                        {
+                            cd.De_AssignFollowTransform(io.NetworkObject);
+                            Debug.Log($"De-assigned follow transform for PO: {po}");
+                        }
                     }
                 }
             }
-
             DestroyAllClientsInteractables();
         }
 
@@ -443,6 +617,7 @@ namespace Core.Networking
 
         public string GetServerState()
         {
+            if (_currentState == null) return "State Undefined";
             return _currentState.ToString();
         }
     }

@@ -322,7 +322,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8655227665988340833}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.81333333
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -823,7 +823,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3466535735484781286}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.81333333
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -974,7 +974,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3533034720516751197}
   - component: {fileID: 475020360307191075}
-  - component: {fileID: 3628480617224588708}
   - component: {fileID: 2505744915970087415}
   m_Layer: 0
   m_Name: Camera
@@ -1049,14 +1048,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &3628480617224588708
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2293414256709127516}
-  m_Enabled: 1
 --- !u!114 &2505744915970087415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3045,8 +3036,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7052494951717239834}
-        m_TargetAssemblyTypeName: Core.ResearcherStartupUI, Assembly-CSharp
-        m_MethodName: StartServer
+        m_TargetAssemblyTypeName: Core.UI.ResearcherStartupUI, Assembly-CSharp
+        m_MethodName: StartHost
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

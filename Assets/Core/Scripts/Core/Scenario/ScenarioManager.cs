@@ -10,10 +10,12 @@ namespace Core.Scenario
         [SerializeField] private SceneField _visualSceneToUse;
 
         private Dictionary<ParticipantOrder, Pose> _mySpawnPositions;
+        public bool IsInitialized { get; private set; } = false;
 
         private void Start()
         {
             UpdateSpawnPoints();
+            IsInitialized = true;
         }
 
         public bool HasVisualScene()
@@ -36,22 +38,21 @@ namespace Core.Scenario
         {
             Pose ret;
 
-            if (_mySpawnPositions != null)
+            // Ensure _mySpawnPositions is initialized before accessing
+            if (!IsInitialized || _mySpawnPositions == null)
             {
-                if (_mySpawnPositions.TryGetValue(participantOrder, out var position))
-                {
-                    ret = position;
-                }
-                else
-                {
-                    Debug.LogWarning($"Did not find an assigned spawn point for {participantOrder}!");
-                    ret = new Pose();
-                }
+                Debug.LogError($"ScenarioManager not fully initialized or spawn points dictionary is null when trying to get spawn pose for {participantOrder}.");
+                return new Pose(Vector3.zero, Quaternion.identity);
+            }
+
+            if (_mySpawnPositions.TryGetValue(participantOrder, out var position))
+            {
+                ret = position;
             }
             else
             {
-                Debug.LogError("Spawn points dictionary is null!");
-                ret = new Pose();
+                Debug.LogWarning($"Did not find an assigned spawn point for {participantOrder}!");
+                ret = new Pose(Vector3.zero, Quaternion.identity); // Return a default pose
             }
 
             return ret;
