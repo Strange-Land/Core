@@ -51,8 +51,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _visualSceneToUse:
-    m_SceneAsset: {fileID: 102900000, guid: b4eac181d4fe4db4ca1ef0740f8d6d96, type: 3}
-    m_SceneName: VisualDemo_Plain
+    sceneAsset: {fileID: 0}
+    required: 0
+    buildIndex: -1
 --- !u!1 &3187189358470918094
 GameObject:
   m_ObjectHideFlags: 0

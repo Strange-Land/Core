@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ThreeScreenInterface
   m_EditorClassIdentifier: 
   ID: ThreeScreen
-  Prefab: {fileID: 373887332970661497, guid: 977e295ed14b1e84189d3de41b9f18d7, type: 3}
+  AuthoritativeMode: 0
+  Prefab: {fileID: 373887332970661497, guid: f1b76d960bb180042a3d192bbf09f4e3, type: 3}

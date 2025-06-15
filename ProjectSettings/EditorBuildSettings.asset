@@ -15,11 +15,26 @@ EditorBuildSettings:
     path: Assets/Core/Scenes/ScenarioDemo_Plain.unity
     guid: 94efa062ec163de4e99773a164aa0670
   - enabled: 1
+    path: Assets/Extensions/StrangeLandExtension-Scooter/Scenario_City.unity
+    guid: 18126de7e55e7774d985cfeb85b901a4
+  - enabled: 1
     path: Assets/Core/Scenes/ScenarioDemo_Placeholder.unity
     guid: 61a337cb6fa5f884d8fbc37e977604a2
   - enabled: 1
+    path: Assets/Extensions/StrangeLandExtension-Scooter/Scenario_Plane.unity
+    guid: c3285f0053becd64c987a4b8c1678a0a
+  - enabled: 1
+    path: Assets/Extensions/StrangeLandExtension-Scooter/SimpleScene.unity
+    guid: f8cf52ff175d4a24498ed78efea9a3ee
+  - enabled: 1
     path: Assets/Core/Scenes/VisualDemo_Plain.unity
     guid: b4eac181d4fe4db4ca1ef0740f8d6d96
+  - enabled: 1
+    path: Assets/Extensions/StrangeLandExtension-Scooter/Plugins/Fantastic City Generator/Scenes/Scene-Demo.unity
+    guid: 32b17ea901274364cbd9f28096ee37b5
+  - enabled: 1
+    path: Assets/Extensions/StrangeLandExtension-Scooter/Scenario_Satelite.unity
+    guid: e3dcc86ce7aa03e488ad1de47847ec21
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

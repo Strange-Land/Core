@@ -170,7 +170,6 @@ MonoBehaviour:
   ServerStateEnum:
     m_InternalValue: 0
   _researcherPrefabs:
-  - {fileID: 6949794861440479549, guid: 666692c767b3dec4ebf56a2e2caccc40, type: 3}
   - {fileID: 435767235896549270, guid: a21133e0020f17b4d88e91d7157f34ac, type: 3}
   _researcherCameraPrefab: {fileID: 6949794861440479549, guid: 666692c767b3dec4ebf56a2e2caccc40, type: 3}
   WaitingRoomScene:
@@ -181,9 +180,12 @@ MonoBehaviour:
   - sceneAsset: {fileID: 102900000, guid: 94efa062ec163de4e99773a164aa0670, type: 3}
     required: 0
     buildIndex: 2
-  - sceneAsset: {fileID: 102900000, guid: 61a337cb6fa5f884d8fbc37e977604a2, type: 3}
+  - sceneAsset: {fileID: 102900000, guid: 18126de7e55e7774d985cfeb85b901a4, type: 3}
     required: 0
     buildIndex: 3
+  - sceneAsset: {fileID: 102900000, guid: e3dcc86ce7aa03e488ad1de47847ec21, type: 3}
+    required: 0
+    buildIndex: 9
 --- !u!114 &222213421
 MonoBehaviour:
   m_ObjectHideFlags: 0

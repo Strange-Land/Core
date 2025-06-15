@@ -14,6 +14,8 @@ namespace Core.SceneEntities
             transform.rotation = MyInteractableObject.GetCameraPositionObject().rotation;
 
             bool success = NetworkObject.TrySetParent(netobj, true);
+            
+            Display.displays[1].Activate();
             return success;
         }
 
