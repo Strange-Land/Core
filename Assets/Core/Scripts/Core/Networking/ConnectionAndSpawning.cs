@@ -31,11 +31,10 @@ namespace Core.Networking
         public NetworkVariable<EServerState> ServerStateEnum = new NetworkVariable<EServerState>(EServerState.Default,
             NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-        [SerializeField] private List<GameObject> _researcherPrefabs;
-        [SerializeField] private GameObject _researcherCameraPrefab;
+        [SerializeField] private ConnectionAndSpawningSO _config;
 
-        public SceneField WaitingRoomScene;
-        public List<SceneField> ScenarioScenes = new List<SceneField>();
+        public SceneField WaitingRoomScene => _config.WaitingRoomScene;
+        public List<SceneField> ScenarioScenes => _config.ScenarioScenes;
 
         public static ConnectionAndSpawning Instance { get; private set; }
 
@@ -337,7 +336,7 @@ namespace Core.Networking
 
         private void SpawnResearcherCamera(ulong clientId)
         {
-            if (_researcherCameraPrefab == null)
+            if (_config.ResearcherCameraPrefab == null)
             {
                 Debug.LogError("ResearcherCameraPrefab is not assigned!");
                 return;
@@ -367,7 +366,7 @@ namespace Core.Networking
         [ClientRpc]
         private void SpawnResearcherCameraClientRpc(Vector3 spawnPosition, Quaternion spawnRotation, ClientRpcParams clientRpcParams = default)
         {
-            if (_researcherCameraPrefab == null)
+            if (_config.ResearcherCameraPrefab == null)
             {
                 Debug.LogError($"ResearcherCameraPrefab is null on client {NetworkManager.Singleton.LocalClientId}. Cannot spawn.");
                 return;
@@ -380,7 +379,7 @@ namespace Core.Networking
             }
 
 
-            GameObject researcherCameraInstance = Instantiate(_researcherCameraPrefab, spawnPosition, spawnRotation);
+            GameObject researcherCameraInstance = Instantiate(_config.ResearcherCameraPrefab, spawnPosition, spawnRotation);
             Debug.Log($"Spawned researcher camera locally on client {NetworkManager.Singleton.LocalClientId}");
         }
 
@@ -467,7 +466,7 @@ namespace Core.Networking
         {
             Debug.Log("Spawning researcher prefabs (server-side or common)");
 
-            foreach (GameObject prefab in _researcherPrefabs)
+            foreach (GameObject prefab in _config.ResearcherPrefabs)
             {
                 if (prefab == null)
                 {
