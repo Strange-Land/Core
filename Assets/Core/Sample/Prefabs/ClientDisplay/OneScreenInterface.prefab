@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2952279847022648096}
   - component: {fileID: 9108402269061407170}
-  - component: {fileID: 1911710324137854786}
   - component: {fileID: 9067540962511279231}
   m_Layer: 0
   m_Name: SimpleCamera
@@ -85,14 +84,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &1911710324137854786
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2241889684543839834}
-  m_Enabled: 1
 --- !u!114 &9067540962511279231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +140,7 @@ GameObject:
   - component: {fileID: 976209011054980526}
   - component: {fileID: 8571211405321476356}
   - component: {fileID: 6604086735846219529}
+  - component: {fileID: 4423117577227221080}
   m_Layer: 0
   m_Name: OneScreenInterface
   m_TagString: Untagged
@@ -246,3 +238,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  MyInteractableObject: {fileID: 0}
+--- !u!81 &4423117577227221080
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8735471943892320363}
+  m_Enabled: 1

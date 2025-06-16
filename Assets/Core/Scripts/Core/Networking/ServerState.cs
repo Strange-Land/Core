@@ -10,7 +10,7 @@ namespace Core.Networking
      
      Actively investigating more elegant solutions
      */
-    
+
     public enum EServerState
     {
         Default,
@@ -22,63 +22,63 @@ namespace Core.Networking
         Questions,
         PostQuestions
     }
-    
-    
-    
+
+
+
     public interface IServerState
     {
         public EServerState State { get; }
-        
+
         void EnterState(ConnectionAndSpawning context);
-        
+
         void UpdateState(ConnectionAndSpawning context);
-        
+
         void ExitState(ConnectionAndSpawning context);
     }
-    
+
     public class Default : IServerState
     {
         public EServerState State => EServerState.Default;
-        
+
         public void EnterState(ConnectionAndSpawning context)
         {
             Debug.Log("DefaultState: Enter state");
         }
 
         public void UpdateState(ConnectionAndSpawning context) { }
-        
+
         public void ExitState(ConnectionAndSpawning context)
         {
             Debug.Log("DefaultState: Exit state");
         }
     }
 
-    
+
     public class WaitingRoom : IServerState
     {
         public EServerState State => EServerState.WaitingRoom;
-        
+
         public void EnterState(ConnectionAndSpawning context)
         {
             Debug.Log("WaitingRoomState: Enter state");
-        
+
             context.ServerLoadScene(ConnectionAndSpawning.Instance.WaitingRoomScene.SceneName, LoadSceneMode.Single);
         }
 
         public void UpdateState(ConnectionAndSpawning context) { }
-    
+
         public void ExitState(ConnectionAndSpawning context)
         {
             Debug.Log("WaitingRoomState: Exit state");
         }
     }
-    
+
     public class LoadingScenario : IServerState
     {
         public EServerState State => EServerState.LoadingScenario;
-        
+
         private readonly string _scenarioName;
-    
+
         public LoadingScenario(string scenarioName)
         {
             _scenarioName = scenarioName;
@@ -94,7 +94,7 @@ namespace Core.Networking
         }
 
         public void UpdateState(ConnectionAndSpawning context) { }
-        
+
         public void ExitState(ConnectionAndSpawning context)
         {
             Debug.Log("LoadingScenarioState: Exit state");
@@ -104,7 +104,7 @@ namespace Core.Networking
     public class LoadingVisuals : IServerState
     {
         public EServerState State => EServerState.LoadingVisuals;
-        
+
         public void EnterState(ConnectionAndSpawning context)
         {
             Debug.Log("LoadingVisualsState: Enter state");
@@ -125,9 +125,9 @@ namespace Core.Networking
             var sceneName = scenarioManager.GetVisualSceneName();
 
             Debug.Log($"Loading visuals scene: {sceneName}");
-            
+
             if (sceneName == "") return;
-            
+
             Debug.Log($"Loading visuals  scene: {sceneName}");
             context.ServerLoadScene(sceneName, LoadSceneMode.Additive);
         }
@@ -145,7 +145,7 @@ namespace Core.Networking
     public class Ready : IServerState
     {
         public EServerState State => EServerState.Ready;
-        
+
         public void EnterState(ConnectionAndSpawning context)
         {
             Debug.Log("ReadyState: Enter state");
@@ -158,17 +158,17 @@ namespace Core.Networking
                 context.SwitchToState(new Interact());
             }
         }
-        
+
         public void ExitState(ConnectionAndSpawning context)
         {
             Debug.Log("ReadyState: Exit state");
         }
     }
-    
+
     public class Interact : IServerState
     {
         public EServerState State => EServerState.Interact;
-        
+
         public void EnterState(ConnectionAndSpawning context)
         {
             Debug.Log("InteractState: Enter state");
@@ -176,22 +176,22 @@ namespace Core.Networking
 
         public void UpdateState(ConnectionAndSpawning context)
         {
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.I))
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.Q))
             {
                 context.SwitchToState(new Questions());
             }
         }
-        
+
         public void ExitState(ConnectionAndSpawning context)
         {
             Debug.Log("InteractState: Exit state");
         }
     }
-    
+
     public class Questions : IServerState
     {
         public EServerState State => EServerState.Questions;
-        
+
         public void EnterState(ConnectionAndSpawning context)
         {
             Debug.Log("QuestionsState: Enter state");
@@ -200,20 +200,20 @@ namespace Core.Networking
         public void UpdateState(ConnectionAndSpawning context)
         {
             Debug.Log("QuestionsState: checking if all participants are done...");
-        
+
             // If all QNFinished = true => context.SwitchToState(new PostQuestionsState());
         }
-        
+
         public void ExitState(ConnectionAndSpawning context)
         {
             Debug.Log("QuestionsState: Exit state");
         }
     }
-    
+
     public class PostQuestions : IServerState
     {
         public EServerState State => EServerState.PostQuestions;
-        
+
         public void EnterState(ConnectionAndSpawning context)
         {
             Debug.Log("PostQuestionsState: Enter state");
@@ -222,7 +222,7 @@ namespace Core.Networking
         public void UpdateState(ConnectionAndSpawning context)
         {
         }
-        
+
         public void ExitState(ConnectionAndSpawning context)
         {
             Debug.Log("PostQuestionsState: Exit state");
