@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: InteractableObjectsSO
   m_EditorClassIdentifier: 
   InteractableObjects:
-  - {fileID: 11400000, guid: 7e570fcce2e6da64cb426e42ee246c40, type: 2}
-  - {fileID: 11400000, guid: f75f184c8d075e54ea9f778101eed944, type: 2}
+  - {fileID: 11400000, guid: 02fe96b58e4c83d458d5e7454be0b596, type: 2}

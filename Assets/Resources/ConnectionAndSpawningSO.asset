@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e0c09e043645df4b8f8af74261b1bc9, type: 3}
+  m_Name: ConnectionAndSpawningSO
+  m_EditorClassIdentifier: 
+  ResearcherPrefabs:
+  - {fileID: 6949794861440479549, guid: 666692c767b3dec4ebf56a2e2caccc40, type: 3}
+  - {fileID: 435767235896549270, guid: a21133e0020f17b4d88e91d7157f34ac, type: 3}
+  ResearcherCameraPrefab: {fileID: 6949794861440479549, guid: 666692c767b3dec4ebf56a2e2caccc40, type: 3}
+  WaitingRoomScene:
+    sceneAsset: {fileID: 102900000, guid: 9e3acfda9278e224b9ba91d51c6ce730, type: 3}
+    required: 0
+    buildIndex: 1
+  ScenarioScenes:
+  - sceneAsset: {fileID: 102900000, guid: 94efa062ec163de4e99773a164aa0670, type: 3}
+    required: 0
+    buildIndex: 2
+  - sceneAsset: {fileID: 102900000, guid: 61a337cb6fa5f884d8fbc37e977604a2, type: 3}
+    required: 0
+    buildIndex: 3
