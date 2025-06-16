@@ -349,9 +349,9 @@ namespace Core.Networking
                 return;
             }
 
-            Pose researcherPose = sm.GetSpawnPose(ParticipantOrder.Researcher);
-            Vector3 spawnPosition = researcherPose.position;
-            Quaternion spawnRotation = researcherPose.rotation;
+            Pose poseA = sm.GetSpawnPose(ParticipantOrder.A);
+            Vector3 spawnPosition = poseA.position;
+            Quaternion spawnRotation = poseA.rotation;
 
             SpawnResearcherCameraClientRpc(spawnPosition, spawnRotation, new ClientRpcParams
             {
@@ -360,7 +360,7 @@ namespace Core.Networking
                     TargetClientIds = new ulong[] { clientId }
                 }
             });
-            Debug.Log($"Requested researcher camera spawn for client {clientId}");
+            Debug.Log($"Requested researcher camera spawn for client {clientId} at Pose A's position");
         }
 
         [ClientRpc]
@@ -372,12 +372,18 @@ namespace Core.Networking
                 return;
             }
 
+            ParticipantOrder po = Participants.GetPO(NetworkManager.Singleton.LocalClientId);
+            if (po != ParticipantOrder.Researcher)
+            {
+                Debug.LogWarning($"Attempted to spawn researcher camera for non-researcher client {NetworkManager.Singleton.LocalClientId} (PO: {po}). Skipping spawn.");
+                return;
+            }
+
             if (GameObject.FindFirstObjectByType<FreeCameraController>() != null && NetworkManager.Singleton.LocalClientId == clientRpcParams.Send.TargetClientIds[0])
             {
                 Debug.LogWarning($"Researcher camera already exists for client {NetworkManager.Singleton.LocalClientId}. Skipping spawn.");
                 return;
             }
-
 
             GameObject researcherCameraInstance = Instantiate(_config.ResearcherCameraPrefab, spawnPosition, spawnRotation);
             Debug.Log($"Spawned researcher camera locally on client {NetworkManager.Singleton.LocalClientId}");
